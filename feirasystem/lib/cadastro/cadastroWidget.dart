@@ -1,9 +1,6 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import '../localidade/localidadeWidget.dart';
-import '../sublocalidade/sublocalidadeWidget.dart';
-import '../atividade/atividadeWidget.dart';
 
 class Cadastro extends StatelessWidget {
   const Cadastro({super.key});
@@ -21,30 +18,21 @@ class Cadastro extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Localidades()),
-                );
+                Navigator.pushNamed(context, '/cadastro/localidade');
               },
               child: const Text('Localidades'),
             ),
             const SizedBox(height: 20), // Espaçamento entre os botões
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Sublocalidades()),
-                );
+                Navigator.pushNamed(context, '/cadastro/sublocalidade');
               },
               child: const Text('Sublocalidades'),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Atividades()),
-                );
+                Navigator.pushNamed(context, '/cadastro/atividade');
               },
               child: const Text('Atividades'),
             ),
