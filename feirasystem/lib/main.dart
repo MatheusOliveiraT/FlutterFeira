@@ -17,12 +17,12 @@ class MyApp extends StatelessWidget {
       title: 'Feira de Profissões',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 251, 255, 41)),
+            seedColor: const Color.fromARGB(255, 255, 255, 1)),
         useMaterial3: true,
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const MyHomePage(title: 'Feira de Profissões'),
+        '/': (context) => const HomePage(title: 'Feira de Profissões'),
         '/cadastro': (context) => const Cadastro(),
         '/cadastro/localidade': (context) => const Localidades(),
         '/cadastro/sublocalidade': (context) => const Sublocalidades(),
