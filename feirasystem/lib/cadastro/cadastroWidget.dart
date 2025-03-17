@@ -9,7 +9,6 @@ class Cadastro extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Cadastro'),
       ),
       body: Center(
@@ -18,21 +17,21 @@ class Cadastro extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/cadastro/localidade');
+                Navigator.pushNamed(context, 'cadastro/localidade');
               },
               child: const Text('Localidades'),
             ),
             const SizedBox(height: 20), // Espaçamento entre os botões
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/cadastro/sublocalidade');
+                Navigator.pushNamed(context, 'cadastro/sublocalidade');
               },
               child: const Text('Sublocalidades'),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/cadastro/atividade');
+                Navigator.pushNamed(context, 'cadastro/atividade');
               },
               child: const Text('Atividades'),
             ),

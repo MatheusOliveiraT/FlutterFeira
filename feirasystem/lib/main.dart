@@ -6,27 +6,29 @@ import 'package:feirasystem/homepage/homePageWidget.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ExpoUT());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class ExpoUT extends StatelessWidget {
+  const ExpoUT({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Feira de Profissões',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 255, 255, 1)),
+            seedColor: const Color.fromARGB(255, 255, 255, 0)),
         useMaterial3: true,
+        appBarTheme: const AppBarTheme(
+            backgroundColor: Color.fromARGB(255, 253, 251, 142)),
       ),
-      initialRoute: '/',
+      initialRoute: '',
       routes: {
-        '/': (context) => const HomePage(title: 'Feira de Profissões'),
-        '/cadastro': (context) => const Cadastro(),
-        '/cadastro/localidade': (context) => const Localidades(),
-        '/cadastro/sublocalidade': (context) => const Sublocalidades(),
-        '/cadastro/atividade': (context) => const Atividades(),
+        '': (context) => const HomePage(title: 'Feira de Profissões'),
+        'cadastro': (context) => const Cadastro(),
+        'cadastro/localidade': (context) => const Localidades(),
+        'cadastro/sublocalidade': (context) => const Sublocalidades(),
+        'cadastro/atividade': (context) => const Atividades(),
       },
     );
   }

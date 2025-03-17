@@ -29,7 +29,6 @@ class _AtividadesState extends State<Atividades> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Atividades'),
       ),
       body: SingleChildScrollView(
