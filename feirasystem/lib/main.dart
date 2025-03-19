@@ -17,14 +17,14 @@ class ExpoUT extends StatelessWidget {
       title: 'Feira de Profissões',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 255, 255, 0)),
+            seedColor: const Color.fromARGB(255, 50, 136, 242)),
         useMaterial3: true,
         appBarTheme: const AppBarTheme(
             backgroundColor: Color.fromARGB(255, 253, 251, 142)),
       ),
       initialRoute: '',
       routes: {
-        '': (context) => const HomePage(title: 'Feira de Profissões'),
+        '': (context) => const HomePage(),
         'cadastro': (context) => const Cadastro(),
         'cadastro/localidade': (context) => const Localidades(),
         'cadastro/sublocalidade': (context) => const Sublocalidades(),
