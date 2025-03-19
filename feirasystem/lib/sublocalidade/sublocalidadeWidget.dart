@@ -25,7 +25,6 @@ class _SublocalidadesState extends State<Sublocalidades> {
   @override
   void initState() {
     super.initState();
-    _atualizarSublocalidades();
     _sublocalidades = [
       Sublocalidade(
           0, 'Aquário', 'Aquário', _localidades.firstWhere((l) => l.id == 0)),
@@ -34,6 +33,7 @@ class _SublocalidadesState extends State<Sublocalidades> {
       Sublocalidade(2, 'B103', 'Andar superior',
           _localidades.firstWhere((l) => l.id == 1)),
     ];
+    _atualizarSublocalidades();
   }
 
   @override
@@ -75,66 +75,73 @@ class _SublocalidadesState extends State<Sublocalidades> {
     }
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(sublocalidade == null
-            ? 'Criar sublocalidade'
-            : 'Editar ${sublocalidade.nome}'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _controladorNome,
-                decoration: const InputDecoration(labelText: 'Nome'),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return AlertDialog(
+              title: Text(sublocalidade == null
+                  ? 'Criar sublocalidade'
+                  : 'Editar ${sublocalidade.nome}'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: _controladorNome,
+                      decoration: const InputDecoration(labelText: 'Nome'),
+                    ),
+                    TextField(
+                      controller: _controladorDescricao,
+                      decoration: const InputDecoration(labelText: 'Descrição'),
+                    ),
+                    DropdownButton<Localidade>(
+                      value: _localidadeSelecionada,
+                      hint: const Text("Selecione uma localidade"),
+                      items: _localidades.map((Localidade localidade) {
+                        return DropdownMenuItem<Localidade>(
+                          value: localidade,
+                          child: Text(localidade.nome),
+                        );
+                      }).toList(),
+                      onChanged: (Localidade? novaLocalidade) {
+                        setStateDialog(() {
+                          _localidadeSelecionada = novaLocalidade;
+                        });
+                      },
+                    )
+                  ],
+                ),
               ),
-              TextField(
-                controller: _controladorDescricao,
-                decoration: const InputDecoration(labelText: 'Descrição'),
-              ),
-              DropdownButton<Localidade>(
-                value: _localidadeSelecionada,
-                hint: const Text("Selecione uma localidade"),
-                items: _localidades.map((Localidade localidade) {
-                  return DropdownMenuItem<Localidade>(
-                    value: localidade,
-                    child: Text(localidade.nome),
-                  );
-                }).toList(),
-                onChanged: (Localidade? novaLocalidade) {
-                  setState(() {
-                    _localidadeSelecionada = novaLocalidade;
-                  });
-                },
-              )
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Voltar'),
-          ),
-          TextButton(
-            onPressed: () {
-              if (_validarForm()) {
-                if (sublocalidade != null) {
-                  // UPDATE
-                } else {
-                  // CREATE
-                }
-                Navigator.pop(context);
-                final snackBar = SnackBar(
-                  content: Text(
-                      '${sublocalidade == null ? 'Sublocalidade criada' : '${sublocalidade.nome} atualizado(a)'} com sucesso!'),
-                  duration: const Duration(seconds: 2), // Duração da mensagem
-                );
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              }
-            },
-            child: Text(sublocalidade == null ? 'Criar' : 'Atualizar'),
-          ),
-        ],
-      ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Voltar'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    if (_validarForm()) {
+                      if (sublocalidade != null) {
+                        // UPDATE
+                      } else {
+                        // CREATE
+                      }
+                      Navigator.pop(context);
+                      final snackBar = SnackBar(
+                        content: Text(
+                            '${sublocalidade == null ? 'Sublocalidade criada' : '${sublocalidade.nome} atualizado(a)'} com sucesso!'),
+                        duration:
+                            const Duration(seconds: 2), // Duração da mensagem
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    }
+                  },
+                  child: Text(sublocalidade == null ? 'Criar' : 'Atualizar'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 
