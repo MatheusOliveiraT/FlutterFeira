@@ -1,53 +1,38 @@
 import 'package:flutter/material.dart';
-import 'localidadeModel.dart';
+import 'feiraModel.dart';
 
-class Localidades extends StatefulWidget {
-  const Localidades({super.key});
+class Feiras extends StatefulWidget {
+  const Feiras({super.key});
   @override
-  // ignore: library_private_types_in_public_api
-  _LocalidadesState createState() => _LocalidadesState();
+  _FeirasState createState() => _FeirasState();
 }
 
-class _LocalidadesState extends State<Localidades> {
-  final List<Localidade> _localidades = [
-    Localidade(0, 'Bloco A', 15, 'Bloco A da UTFPR'),
-    Localidade(1, 'Bloco B', 4, 'Bloco B da UTFPR')
+class _FeirasState extends State<Feiras> {
+  final List<Feira> _feiras = [
+    Feira(0, 'Feira das Profissões 2025'),
+    Feira(1, 'Feira das Profissões 2026'),
   ];
 
   final TextEditingController _controladorNome = TextEditingController();
-  final TextEditingController _controladorQuantidadeSalas =
-      TextEditingController();
-  final TextEditingController _controladorDescricao = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _atualizarLocalidades();
+    _atualizarFeiras();
   }
 
   @override
   void dispose() {
     _controladorNome.dispose();
-    _controladorDescricao.dispose();
-    _controladorQuantidadeSalas.dispose();
     super.dispose();
   }
 
   bool _validarForm() {
     String nome = _controladorNome.text.trim();
-    String quantidadeSalas = _controladorQuantidadeSalas.text.trim();
-    String descricao = _controladorDescricao.text.trim();
-    if (nome.isEmpty || quantidadeSalas.isEmpty || descricao.isEmpty) {
+    if (nome.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Preencha todos os campos obrigatórios!'),
-            duration: Duration(seconds: 1)),
-      );
-      return false;
-    } else if (int.tryParse(quantidadeSalas) == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Quantidade de salas precisa ser um número!'),
             duration: Duration(seconds: 1)),
       );
       return false;
@@ -55,28 +40,22 @@ class _LocalidadesState extends State<Localidades> {
     return true;
   }
 
-  Future<void> _atualizarLocalidades() async {
+  Future<void> _atualizarFeiras() async {
     setState(() {
       // RETRIEVE
     });
   }
 
-  void _mostrarFormLocalidade({Localidade? localidade}) {
-    if (localidade != null) {
-      _controladorNome.text = localidade.nome;
-      _controladorQuantidadeSalas.text = localidade.quantidadeSalas.toString();
-      _controladorDescricao.text = localidade.descricao;
+  void _mostrarFormFeira({Feira? feira}) {
+    if (feira != null) {
+      _controladorNome.text = feira.nome;
     } else {
       _controladorNome.clear();
-      _controladorQuantidadeSalas.clear();
-      _controladorDescricao.clear();
     }
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(localidade == null
-            ? 'Criar localidade'
-            : 'Editar ${localidade.nome}'),
+        title: Text(feira == null ? 'Criar feira' : 'Editar ${feira.nome}'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -84,16 +63,6 @@ class _LocalidadesState extends State<Localidades> {
               TextField(
                 controller: _controladorNome,
                 decoration: const InputDecoration(labelText: 'Nome'),
-              ),
-              TextField(
-                controller: _controladorDescricao,
-                decoration: const InputDecoration(labelText: 'Descrição'),
-              ),
-              TextField(
-                controller: _controladorQuantidadeSalas,
-                decoration:
-                    const InputDecoration(labelText: 'Quantidade de salas'),
-                keyboardType: TextInputType.number,
               ),
             ],
           ),
@@ -106,7 +75,7 @@ class _LocalidadesState extends State<Localidades> {
           TextButton(
             onPressed: () {
               if (_validarForm()) {
-                if (localidade != null) {
+                if (feira != null) {
                   // UPDATE
                 } else {
                   // CREATE
@@ -114,26 +83,26 @@ class _LocalidadesState extends State<Localidades> {
                 Navigator.pop(context);
                 final snackBar = SnackBar(
                   content: Text(
-                      '${localidade == null ? 'Localidade criada' : '${localidade.nome} atualizado(a)'} com sucesso!'),
+                      '${feira == null ? 'Feira criada' : '${feira.nome} atualizado(a)'} com sucesso!'),
                   duration: const Duration(seconds: 2), // Duração da mensagem
                 );
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
               }
             },
-            child: Text(localidade == null ? 'Criar' : 'Atualizar'),
+            child: Text(feira == null ? 'Criar' : 'Atualizar'),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _deleteLocalidade(Localidade localidade) async {
+  Future<void> _deleteFeira(Feira feira) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Excluir ${localidade.nome}'),
-        content: Text(
-            'Você tem certeza que quer excluir a localidade ${localidade.nome}?'),
+        title: Text('Excluir ${feira.nome}'),
+        content:
+            Text('Você tem certeza que quer excluir a feira ${feira.nome}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -146,13 +115,12 @@ class _LocalidadesState extends State<Localidades> {
         ],
       ),
     );
-
     if (confirm == true) {
       // DELETE
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Localidade excluída com sucesso.'),
+            content: Text('Feira excluída com sucesso.'),
             duration: Duration(seconds: 2)),
       );
     }
@@ -162,16 +130,16 @@ class _LocalidadesState extends State<Localidades> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Localidades'),
+        title: const Text('Feiras'),
       ),
       body: RefreshIndicator(
-        onRefresh: _atualizarLocalidades,
+        onRefresh: _atualizarFeiras,
         child: ListView.builder(
-          itemCount: _localidades.length,
+          itemCount: _feiras.length,
           itemBuilder: (context, index) {
-            final localidade = _localidades[index];
+            final feira = _feiras[index];
             return Dismissible(
-              key: Key(localidade.id.toString()),
+              key: Key(feira.id.toString()),
               direction: DismissDirection.endToStart,
               background: Container(
                 color: Colors.red,
@@ -179,24 +147,20 @@ class _LocalidadesState extends State<Localidades> {
                 padding: const EdgeInsets.only(right: 16),
                 child: const Icon(Icons.delete, color: Colors.white),
               ),
-              onDismissed: (_) => _deleteLocalidade(localidade),
+              onDismissed: (_) => _deleteFeira(feira),
               child: ListTile(
-                title: Text(localidade.nome),
-                subtitle: Text(
-                  '${localidade.descricao}\nQuantidade de salas: ${localidade.quantidadeSalas.toString()}',
-                ),
+                title: Text(feira.nome),
                 trailing: Row(
                   mainAxisSize:
                       MainAxisSize.min, // Makes the Row take minimum space
                   children: [
                     IconButton(
                       icon: const Icon(Icons.edit),
-                      onPressed: () =>
-                          _mostrarFormLocalidade(localidade: localidade),
+                      onPressed: () => _mostrarFormFeira(feira: feira),
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete),
-                      onPressed: () => _deleteLocalidade(localidade),
+                      onPressed: () => _deleteFeira(feira),
                     ),
                   ],
                 ),
@@ -206,7 +170,7 @@ class _LocalidadesState extends State<Localidades> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _mostrarFormLocalidade(),
+        onPressed: () => _mostrarFormFeira(),
         child: const Icon(Icons.add),
       ),
     );

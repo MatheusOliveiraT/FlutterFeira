@@ -28,12 +28,26 @@ class Cadastro extends StatelessWidget {
               },
               child: const Text('Sublocalidades'),
             ),
+            // const SizedBox(height: 20),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     Navigator.pushNamed(context, 'cadastro/atividade');
+            //   },
+            //   child: const Text('Atividades'),
+            // ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, 'cadastro/atividade');
+                Navigator.pushNamed(context, 'cadastro/feira');
               },
-              child: const Text('Atividades'),
+              child: const Text('Feiras'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, 'cadastro/agendamentofeira');
+              },
+              child: const Text('Agendamento de feira'),
             ),
           ],
         ),
