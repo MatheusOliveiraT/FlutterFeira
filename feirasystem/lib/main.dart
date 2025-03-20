@@ -35,7 +35,7 @@ class ExpoUT extends StatelessWidget {
               backgroundColor: const Color.fromARGB(255, 25, 42, 50),
               foregroundColor: Colors.white,
               textStyle:
-                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

@@ -1,3 +1,4 @@
+import 'package:feirasystem/feira/feiraService.dart';
 import 'package:flutter/material.dart';
 import 'feiraModel.dart';
 
@@ -8,10 +9,8 @@ class Feiras extends StatefulWidget {
 }
 
 class _FeirasState extends State<Feiras> {
-  final List<Feira> _feiras = [
-    Feira(0, 'Feira das Profissões 2025'),
-    Feira(1, 'Feira das Profissões 2026'),
-  ];
+  final FeiraService _feiraService = FeiraService();
+  late Future<List<Feira>> _feiras;
 
   final TextEditingController _controladorNome = TextEditingController();
 
@@ -42,7 +41,7 @@ class _FeirasState extends State<Feiras> {
 
   Future<void> _atualizarFeiras() async {
     setState(() {
-      // RETRIEVE
+      _feiras = _feiraService.getFeiras();
     });
   }
 
@@ -73,20 +72,23 @@ class _FeirasState extends State<Feiras> {
             child: const Text('Voltar'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               if (_validarForm()) {
-                if (feira != null) {
-                  // UPDATE
-                } else {
-                  // CREATE
+                try {
+                  final newFeira = Feira(nome: _controladorNome.text);
+                  if (feira != null) {
+                    await _feiraService.updateFeira(
+                        feira.documentId!, newFeira);
+                  } else {
+                    await _feiraService.createFeira(newFeira);
+                  }
+                  Navigator.pop(context);
+                  _atualizarFeiras();
+                  _mostrarSnackBar(
+                      '${feira == null ? 'Feira criada' : '${feira.nome} atualizado(a)'} com sucesso!');
+                } catch (e) {
+                  _mostrarSnackBar(e.toString());
                 }
-                Navigator.pop(context);
-                final snackBar = SnackBar(
-                  content: Text(
-                      '${feira == null ? 'Feira criada' : '${feira.nome} atualizado(a)'} com sucesso!'),
-                  duration: const Duration(seconds: 2), // Duração da mensagem
-                );
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
               }
             },
             child: Text(feira == null ? 'Criar' : 'Atualizar'),
@@ -116,14 +118,19 @@ class _FeirasState extends State<Feiras> {
       ),
     );
     if (confirm == true) {
-      // DELETE
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Feira excluída com sucesso.'),
-            duration: Duration(seconds: 2)),
-      );
+      await _feiraService.deleteFeira(feira.documentId!);
+      _atualizarFeiras();
+      _mostrarSnackBar('Feira excluída com sucesso.');
     }
+  }
+
+  void _mostrarSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   @override
@@ -134,38 +141,49 @@ class _FeirasState extends State<Feiras> {
       ),
       body: RefreshIndicator(
         onRefresh: _atualizarFeiras,
-        child: ListView.builder(
-          itemCount: _feiras.length,
-          itemBuilder: (context, index) {
-            final feira = _feiras[index];
-            return Dismissible(
-              key: Key(feira.id.toString()),
-              direction: DismissDirection.endToStart,
-              background: Container(
-                color: Colors.red,
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.only(right: 16),
-                child: const Icon(Icons.delete, color: Colors.white),
-              ),
-              onDismissed: (_) => _deleteFeira(feira),
-              child: ListTile(
-                title: Text(feira.nome),
-                trailing: Row(
-                  mainAxisSize:
-                      MainAxisSize.min, // Makes the Row take minimum space
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () => _mostrarFormFeira(feira: feira),
+        child: FutureBuilder<List<Feira>>(
+          future: _feiras,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
+            final feiras = snapshot.data!;
+            return ListView.builder(
+                itemCount: feiras.length,
+                itemBuilder: (context, index) {
+                  final feira = feiras[index];
+                  return Dismissible(
+                    key: Key(feira.id.toString()),
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.only(right: 16),
+                      child: const Icon(Icons.delete, color: Colors.white),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => _deleteFeira(feira),
+                    onDismissed: (_) => _deleteFeira(feira),
+                    child: ListTile(
+                      title: Text(feira.nome),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize
+                            .min, // Makes the Row take minimum space
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () => _mostrarFormFeira(feira: feira),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () => _deleteFeira(feira),
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-              ),
-            );
+                  );
+                });
           },
         ),
       ),

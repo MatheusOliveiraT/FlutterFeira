@@ -11,8 +11,8 @@ class AgendamentosFeira extends StatefulWidget {
 
 class _AgendamentosFeiraState extends State<AgendamentosFeira> {
   final List<Feira> _feiras = [
-    Feira(0, 'Feira das Profissões 2025'),
-    Feira(1, 'Feira das Profissões 2026'),
+    Feira(id: 0, nome: 'Feira das Profissões 2025'),
+    Feira(id: 1, nome: 'Feira das Profissões 2026'),
   ];
   List<AgendamentoFeira> _agendamentosFeira = [];
 
