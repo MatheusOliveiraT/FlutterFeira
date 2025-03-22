@@ -34,7 +34,7 @@ class AgendamentoFeiraService {
   // Método para pegar todos os agendamentos de feira
   Future<List<AgendamentoFeira>> getAgendamentos() async {
     try {
-      final response = await _dio.get('/agendamentoFeira');
+      final response = await _dio.get('/agendamentoFeiras');
       final List<dynamic> data = response.data['data'];
       return data.map((item) => AgendamentoFeira.fromJson(item)).toList();
     } catch (e) {
@@ -43,9 +43,9 @@ class AgendamentoFeiraService {
   }
 
   // Método para pegar um agendamento específico
-  Future<AgendamentoFeira> getAgendamento(String id) async {
+  Future<AgendamentoFeira> getAgendamento(int id) async {
     try {
-      final response = await _dio.get('/agendamentoFeira/$id');
+      final response = await _dio.get('/agendamentoFeiras/$id');
       return AgendamentoFeira.fromJson(response.data['data']);
     } catch (e) {
       throw 'Erro ao carregar agendamento: ${e.toString()}';
@@ -56,12 +56,12 @@ class AgendamentoFeiraService {
   Future<AgendamentoFeira> createAgendamento(
       AgendamentoFeira agendamento) async {
     try {
-      final response = await _dio.post('/agendamentoFeira', data: {
+      final response = await _dio.post('/agendamentoFeiras', data: {
         'data': {
           'id': agendamento.id,
           'data': agendamento.data.toIso8601String(),
           'turno': agendamento.turno.descricao,
-          'feira': agendamento.feira.toJson(),
+          'idFeira': agendamento.idFeira,
         }
       });
       return AgendamentoFeira.fromJson(response.data['data']);
@@ -72,14 +72,14 @@ class AgendamentoFeiraService {
 
   // Método para atualizar um agendamento existente
   Future<AgendamentoFeira> updateAgendamento(
-      String id, AgendamentoFeira agendamento) async {
+      int id, AgendamentoFeira agendamento) async {
     try {
-      final response = await _dio.put('/agendamentoFeira/$id', data: {
+      final response = await _dio.put('/agendamentoFeiras/$id', data: {
         'data': {
           'id': agendamento.id,
           'data': agendamento.data.toIso8601String(),
           'turno': agendamento.turno.descricao,
-          'feira': agendamento.feira.toJson(),
+          'idFeira': agendamento.idFeira,
         }
       });
       return AgendamentoFeira.fromJson(response.data['data']);
@@ -89,7 +89,7 @@ class AgendamentoFeiraService {
   }
 
   // Método para deletar um agendamento
-  Future<void> deleteAgendamento(String id) async {
+  Future<void> deleteAgendamento(int id) async {
     try {
       await _dio.delete('/agendamentoFeira/$id');
     } catch (e) {

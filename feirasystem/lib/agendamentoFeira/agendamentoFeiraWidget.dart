@@ -94,11 +94,13 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
     });
   }
 
-  void _mostrarFormAgendamentoFeira({AgendamentoFeira? agendamentoFeira}) {
+  Future<void> _mostrarFormAgendamentoFeira(
+      {AgendamentoFeira? agendamentoFeira}) async {
     if (agendamentoFeira != null) {
       _controladorData.text =
           DateFormat('dd/MM/yyyy').format(agendamentoFeira.data);
-      _feiraSelecionada = agendamentoFeira.feira;
+      _feiraSelecionada =
+          await _feiraService.getFeira(agendamentoFeira.idFeira);
       _turnoSelecionado = agendamentoFeira.turno;
     } else {
       _controladorData.clear();
@@ -197,10 +199,10 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
                       final newAgendamentoFeira = AgendamentoFeira(
                           data: DateTime.parse(_controladorData.text),
                           turno: _turnoSelecionado!,
-                          feira: _feiraSelecionada!);
+                          idFeira: _feiraSelecionada!.id!);
                       if (agendamentoFeira != null) {
                         await _agendamentoFeiraService.updateAgendamento(
-                            agendamentoFeira.documentId!, newAgendamentoFeira);
+                            agendamentoFeira.id!, newAgendamentoFeira);
                       } else {
                         await _agendamentoFeiraService
                             .createAgendamento(newAgendamentoFeira);
@@ -209,7 +211,7 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
                       _atualizarAgendamentosFeira();
                       final snackBar = SnackBar(
                         content: Text(
-                            '${agendamentoFeira == null ? 'Agendamento de feira criado' : 'Agendamento de feira atualizado'} com sucesso!'),
+                            'Agendamento de feira ${agendamentoFeira == null ? 'criado' : 'atualizado'} com sucesso!'),
                         duration:
                             const Duration(seconds: 2), // Duração da mensagem
                       );
@@ -247,12 +249,11 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
       ),
     );
     if (confirm == true) {
-      await _agendamentoFeiraService
-          .deleteAgendamento(agendamentoFeira.documentId!);
+      await _agendamentoFeiraService.deleteAgendamento(agendamentoFeira.id!);
       _atualizarAgendamentosFeira();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Agendamento de feira excluída com sucesso.'),
+            content: Text('Agendamento de feira excluído com sucesso.'),
             duration: Duration(seconds: 2)),
       );
     }
@@ -267,7 +268,7 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
       body: RefreshIndicator(
         onRefresh: _atualizarAgendamentosFeira,
         child: FutureBuilder<List<AgendamentoFeira>>(
-          future: _agendamentosFeira, // Usando o Future para esperar os dados
+          future: _agendamentosFeira,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -282,10 +283,11 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
                   child: Text('Nenhum agendamento encontrado.'));
             }
 
-            final agendamentosFeira = snapshot.data!; // Agora você tem a lista
+            final agendamentosFeira = snapshot.data!;
+            final List<Feira> feiras = _feiras as List<Feira>;
 
             return ListView.builder(
-              itemCount: agendamentosFeira.length, // Usando length da lista
+              itemCount: agendamentosFeira.length,
               itemBuilder: (context, index) {
                 final agendamentoFeira = agendamentosFeira[index];
                 return Dismissible(
@@ -299,7 +301,10 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
                   ),
                   onDismissed: (_) => _deleteAgendamentoFeira(agendamentoFeira),
                   child: ListTile(
-                    title: Text(agendamentoFeira.feira.nome),
+                    title: Text(feiras
+                        .firstWhere(
+                            (feira) => feira.id == agendamentoFeira.idFeira)
+                        .nome),
                     subtitle: Text(
                       'Data: ${DateFormat('dd/MM/yyyy').format(agendamentoFeira.data)}\nTurno: ${agendamentoFeira.turno.descricao}',
                     ),

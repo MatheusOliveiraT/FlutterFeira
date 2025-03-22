@@ -1,5 +1,3 @@
-import 'package:feirasystem/feira/feiraModel.dart';
-
 enum Turno { MANHA, TARDE, NOITE }
 
 extension TurnoExtensao on Turno {
@@ -16,7 +14,7 @@ extension TurnoExtensao on Turno {
 
   static Turno fromString(String turno) {
     switch (turno.toLowerCase()) {
-      case 'manha':
+      case 'manhã':
         return Turno.MANHA;
       case 'tarde':
         return Turno.TARDE;
@@ -30,42 +28,36 @@ extension TurnoExtensao on Turno {
 
 class AgendamentoFeira {
   final int? id;
-  final String? documentId;
   final DateTime data;
   final Turno turno;
-  final Feira feira;
+  final int idFeira;
 
   AgendamentoFeira(
       {this.id,
-      this.documentId,
       required this.data,
       required this.turno,
-      required this.feira});
+      required this.idFeira});
 
   @override
   String toString() {
-    return 'AgendamentoFeira {\nid: $id, \ndata: $data, \nturno: $turno, \nfeira: $feira\n}';
+    return 'AgendamentoFeira {\nid: $id, \ndata: $data, \nturno: $turno, \nfeira: $idFeira\n}';
   }
 
   factory AgendamentoFeira.fromJson(Map<String, dynamic> json) {
     if (json['attributes'] != null) {
       final attributes = json['attributes'];
-      final feira = Feira.fromJson(attributes['feira']);
       return AgendamentoFeira(
         id: json['id'],
-        documentId: attributes['documentId'],
         data: DateTime.parse(attributes['data']),
         turno: TurnoExtensao.fromString(attributes['turno']),
-        feira: feira,
+        idFeira: attributes['idFeira'],
       );
     }
-    final feira = Feira.fromJson(json['feira']);
     return AgendamentoFeira(
       id: int.parse(json['id'].toString()),
-      documentId: json['documentId'],
       data: DateTime.parse(json['data']),
       turno: TurnoExtensao.fromString(json['turno']),
-      feira: feira,
+      idFeira: json['idFeira'],
     );
   }
 
@@ -73,7 +65,7 @@ class AgendamentoFeira {
     return {
       'data': data.toIso8601String(),
       'turno': turno.descricao,
-      'feira': feira.toJson(),
+      'idFeira': idFeira,
     };
   }
 }

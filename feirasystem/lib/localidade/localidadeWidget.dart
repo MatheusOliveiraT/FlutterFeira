@@ -151,7 +151,6 @@ class _LocalidadesState extends State<Localidades> {
 
     if (confirm == true) {
       // DELETE
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Localidade excluída com sucesso.'),

@@ -84,6 +84,8 @@ class ExpoUT extends StatelessWidget {
           backgroundColor: Color.fromARGB(255, 236, 239, 243),
         ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        dialogTheme: const DialogThemeData(
+            backgroundColor: Color.fromARGB(255, 236, 239, 243)),
       ),
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,

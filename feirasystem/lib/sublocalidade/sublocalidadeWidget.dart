@@ -26,12 +26,9 @@ class _SublocalidadesState extends State<Sublocalidades> {
   void initState() {
     super.initState();
     _sublocalidades = [
-      Sublocalidade(
-          0, 'Aquário', 'Aquário', _localidades.firstWhere((l) => l.id == 0)),
-      Sublocalidade(1, 'B102', 'Andar superior',
-          _localidades.firstWhere((l) => l.id == 1)),
-      Sublocalidade(2, 'B103', 'Andar superior',
-          _localidades.firstWhere((l) => l.id == 1)),
+      Sublocalidade(0, 'Aquário', 'Aquário', 0),
+      Sublocalidade(1, 'B102', 'Andar superior', 1),
+      Sublocalidade(2, 'B103', 'Andar superior', 1),
     ];
     _atualizarSublocalidades();
   }
@@ -67,7 +64,8 @@ class _SublocalidadesState extends State<Sublocalidades> {
     if (sublocalidade != null) {
       _controladorNome.text = sublocalidade.nome;
       _controladorDescricao.text = sublocalidade.descricao;
-      _localidadeSelecionada = sublocalidade.localidade;
+      _localidadeSelecionada = _localidades.firstWhere(
+          (localidade) => localidade.id == sublocalidade.idLocalidade);
     } else {
       _controladorNome.clear();
       _controladorDescricao.clear();
@@ -96,7 +94,7 @@ class _SublocalidadesState extends State<Sublocalidades> {
                       decoration: const InputDecoration(labelText: 'Descrição'),
                     ),
                     const SizedBox(height: 10),
-                    DropdownButton<Localidade>(
+                    DropdownButtonFormField<Localidade>(
                       value: _localidadeSelecionada,
                       hint: const Text("Selecione uma localidade"),
                       items: _localidades.map((Localidade localidade) {
@@ -203,7 +201,7 @@ class _SublocalidadesState extends State<Sublocalidades> {
               child: ListTile(
                 title: Text(sublocalidade.nome),
                 subtitle: Text(
-                  '${sublocalidade.descricao}\nLocalidade: ${sublocalidade.localidade.nome}',
+                  '${sublocalidade.descricao}\nLocalidade: ${_localidades.firstWhere((localidade) => localidade.id == sublocalidade.idLocalidade).nome}',
                 ),
                 trailing: Row(
                   mainAxisSize:

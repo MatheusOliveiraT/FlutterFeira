@@ -77,8 +77,7 @@ class _FeirasState extends State<Feiras> {
                 try {
                   final newFeira = Feira(nome: _controladorNome.text);
                   if (feira != null) {
-                    await _feiraService.updateFeira(
-                        feira.documentId!, newFeira);
+                    await _feiraService.updateFeira(feira.id!, newFeira);
                   } else {
                     await _feiraService.createFeira(newFeira);
                   }
@@ -118,7 +117,7 @@ class _FeirasState extends State<Feiras> {
       ),
     );
     if (confirm == true) {
-      await _feiraService.deleteFeira(feira.documentId!);
+      await _feiraService.deleteFeira(feira.id!);
       _atualizarFeiras();
       _mostrarSnackBar('Feira excluída com sucesso.');
     }
