@@ -85,10 +85,12 @@ class _LocalidadesState extends State<Localidades> {
                 controller: _controladorNome,
                 decoration: const InputDecoration(labelText: 'Nome'),
               ),
+              const SizedBox(height: 10),
               TextField(
                 controller: _controladorDescricao,
                 decoration: const InputDecoration(labelText: 'Descrição'),
               ),
+              const SizedBox(height: 10),
               TextField(
                 controller: _controladorQuantidadeSalas,
                 decoration:

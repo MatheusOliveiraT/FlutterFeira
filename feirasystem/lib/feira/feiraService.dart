@@ -24,7 +24,7 @@ class FeiraService {
       },
       onError: (DioException e, handler) {
         if (e.response?.statusCode == 401) {
-          print('Token expirado ou inválido');
+          // TO DO: INVALID/EXPIRED TOKEN
         }
         return handler.next(e);
       },

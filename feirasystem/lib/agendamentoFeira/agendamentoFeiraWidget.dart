@@ -1,5 +1,7 @@
 import 'package:feirasystem/agendamentoFeira/agendamentoFeiraModel.dart';
+import 'package:feirasystem/agendamentoFeira/agendamentoFeiraService.dart';
 import 'package:feirasystem/feira/feiraModel.dart';
+import 'package:feirasystem/feira/feiraService.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -10,11 +12,11 @@ class AgendamentosFeira extends StatefulWidget {
 }
 
 class _AgendamentosFeiraState extends State<AgendamentosFeira> {
-  final List<Feira> _feiras = [
-    Feira(id: 0, nome: 'Feira das Profissões 2025'),
-    Feira(id: 1, nome: 'Feira das Profissões 2026'),
-  ];
-  List<AgendamentoFeira> _agendamentosFeira = [];
+  final AgendamentoFeiraService _agendamentoFeiraService =
+      AgendamentoFeiraService();
+  final FeiraService _feiraService = FeiraService();
+  late Future<List<Feira>> _feiras;
+  late Future<List<AgendamentoFeira>> _agendamentosFeira;
 
   final TextEditingController _controladorData = TextEditingController();
   Feira? _feiraSelecionada;
@@ -23,16 +25,7 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
   @override
   void initState() {
     super.initState();
-    _agendamentosFeira = [
-      AgendamentoFeira(0, DateTime.utc(2025, 08, 27), Turno.MANHA,
-          _feiras.firstWhere((l) => l.id == 0)),
-      AgendamentoFeira(1, DateTime.utc(2025, 08, 27), Turno.TARDE,
-          _feiras.firstWhere((l) => l.id == 0)),
-      AgendamentoFeira(2, DateTime.utc(2025, 08, 28), Turno.MANHA,
-          _feiras.firstWhere((l) => l.id == 0)),
-      AgendamentoFeira(3, DateTime.utc(2025, 08, 28), Turno.TARDE,
-          _feiras.firstWhere((l) => l.id == 0)),
-    ];
+    _atualizarFeiras();
     _atualizarAgendamentosFeira();
   }
 
@@ -91,7 +84,13 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
 
   Future<void> _atualizarAgendamentosFeira() async {
     setState(() {
-      // RETRIEVE
+      _agendamentosFeira = _agendamentoFeiraService.getAgendamentos();
+    });
+  }
+
+  Future<void> _atualizarFeiras() async {
+    setState(() {
+      _feiras = _feiraService.getFeiras();
     });
   }
 
@@ -119,22 +118,39 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    DropdownButton<Feira>(
-                      value: _feiraSelecionada,
-                      hint: const Text("Selecione uma feira"),
-                      items: _feiras.map((Feira feira) {
-                        return DropdownMenuItem<Feira>(
-                          value: feira,
-                          child: Text(feira.nome),
-                        );
-                      }).toList(),
-                      onChanged: (Feira? novaFeira) {
-                        setStateDialog(() {
-                          _feiraSelecionada = novaFeira;
-                        });
+                    FutureBuilder<List<Feira>>(
+                      future: _feiras,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Erro: ${snapshot.error}');
+                        } else if (!snapshot.hasData ||
+                            snapshot.data!.isEmpty) {
+                          return const Text('Nenhuma feira encontrada');
+                        } else {
+                          final feiras = snapshot.data!;
+                          return DropdownButtonFormField<Feira>(
+                            value: _feiraSelecionada,
+                            hint: const Text("Selecione uma feira"),
+                            items: feiras.map((Feira feira) {
+                              return DropdownMenuItem<Feira>(
+                                value: feira,
+                                child: Text(feira.nome),
+                              );
+                            }).toList(),
+                            onChanged: (Feira? novaFeira) {
+                              setStateDialog(() {
+                                _feiraSelecionada = novaFeira;
+                              });
+                            },
+                          );
+                        }
                       },
                     ),
-                    DropdownButton<Turno>(
+                    const SizedBox(height: 10),
+                    DropdownButtonFormField<Turno>(
                       value: _turnoSelecionado,
                       hint: const Text("Selecione um turno"),
                       items: Turno.values.map((Turno turno) {
@@ -149,13 +165,13 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
                         });
                       },
                     ),
+                    const SizedBox(height: 10),
                     TextField(
                       controller: _controladorData,
                       readOnly: true,
                       decoration: const InputDecoration(
                         labelText: 'Selecione a data',
                         suffixIcon: Icon(Icons.calendar_today),
-                        border: OutlineInputBorder(),
                       ),
                       onTap: () => {
                         if (agendamentoFeira != null)
@@ -176,14 +192,21 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
                   child: const Text('Voltar'),
                 ),
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_validarForm()) {
+                      final newAgendamentoFeira = AgendamentoFeira(
+                          data: DateTime.parse(_controladorData.text),
+                          turno: _turnoSelecionado!,
+                          feira: _feiraSelecionada!);
                       if (agendamentoFeira != null) {
-                        // UPDATE
+                        await _agendamentoFeiraService.updateAgendamento(
+                            agendamentoFeira.documentId!, newAgendamentoFeira);
                       } else {
-                        // CREATE
+                        await _agendamentoFeiraService
+                            .createAgendamento(newAgendamentoFeira);
                       }
                       Navigator.pop(context);
+                      _atualizarAgendamentosFeira();
                       final snackBar = SnackBar(
                         content: Text(
                             '${agendamentoFeira == null ? 'Agendamento de feira criado' : 'Agendamento de feira atualizado'} com sucesso!'),
@@ -224,8 +247,9 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
       ),
     );
     if (confirm == true) {
-      // DELETE
-      // ignore: use_build_context_synchronously
+      await _agendamentoFeiraService
+          .deleteAgendamento(agendamentoFeira.documentId!);
+      _atualizarAgendamentosFeira();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Agendamento de feira excluída com sucesso.'),
@@ -242,42 +266,62 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
       ),
       body: RefreshIndicator(
         onRefresh: _atualizarAgendamentosFeira,
-        child: ListView.builder(
-          itemCount: _agendamentosFeira.length,
-          itemBuilder: (context, index) {
-            final agendamentoFeira = _agendamentosFeira[index];
-            return Dismissible(
-              key: Key(agendamentoFeira.id.toString()),
-              direction: DismissDirection.endToStart,
-              background: Container(
-                color: Colors.red,
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.only(right: 16),
-                child: const Icon(Icons.delete, color: Colors.white),
-              ),
-              onDismissed: (_) => _deleteAgendamentoFeira(agendamentoFeira),
-              child: ListTile(
-                title: Text(agendamentoFeira.feira.nome),
-                subtitle: Text(
-                  'Data: ${DateFormat('dd/MM/yyyy').format(agendamentoFeira.data)}\nTurno: ${agendamentoFeira.turno.descricao}',
-                ),
-                trailing: Row(
-                  mainAxisSize:
-                      MainAxisSize.min, // Makes the Row take minimum space
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () => _mostrarFormAgendamentoFeira(
-                          agendamentoFeira: agendamentoFeira),
+        child: FutureBuilder<List<AgendamentoFeira>>(
+          future: _agendamentosFeira, // Usando o Future para esperar os dados
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (snapshot.hasError) {
+              return Center(child: Text('Erro: ${snapshot.error}'));
+            }
+
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(
+                  child: Text('Nenhum agendamento encontrado.'));
+            }
+
+            final agendamentosFeira = snapshot.data!; // Agora você tem a lista
+
+            return ListView.builder(
+              itemCount: agendamentosFeira.length, // Usando length da lista
+              itemBuilder: (context, index) {
+                final agendamentoFeira = agendamentosFeira[index];
+                return Dismissible(
+                  key: Key(agendamentoFeira.id.toString()),
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    color: Colors.red,
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 16),
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  onDismissed: (_) => _deleteAgendamentoFeira(agendamentoFeira),
+                  child: ListTile(
+                    title: Text(agendamentoFeira.feira.nome),
+                    subtitle: Text(
+                      'Data: ${DateFormat('dd/MM/yyyy').format(agendamentoFeira.data)}\nTurno: ${agendamentoFeira.turno.descricao}',
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () =>
-                          _deleteAgendamentoFeira(agendamentoFeira),
+                    trailing: Row(
+                      mainAxisSize:
+                          MainAxisSize.min, // Makes the Row take minimum space
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () => _mostrarFormAgendamentoFeira(
+                              agendamentoFeira: agendamentoFeira),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () =>
+                              _deleteAgendamentoFeira(agendamentoFeira),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             );
           },
         ),
