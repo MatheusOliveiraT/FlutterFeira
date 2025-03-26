@@ -13,8 +13,16 @@ class Sublocalidades extends StatefulWidget {
 
 class _SublocalidadesState extends State<Sublocalidades> {
   final List<Localidade> _localidades = [
-    Localidade(0, 'Bloco A', 15, 'Bloco A da UTFPR'),
-    Localidade(1, 'Bloco B', 4, 'Bloco B da UTFPR')
+    Localidade(
+        id: 0,
+        nome: 'Bloco A',
+        quantidadeSalas: 15,
+        descricao: 'Bloco A da UTFPR'),
+    Localidade(
+        id: 1,
+        nome: 'Bloco B',
+        quantidadeSalas: 4,
+        descricao: 'Bloco B da UTFPR')
   ];
   List<Sublocalidade> _sublocalidades = [];
 

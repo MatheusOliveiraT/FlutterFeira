@@ -1,17 +1,17 @@
 // ignore_for_file: file_names
 
 class Localidade {
-  final int id;
+  final int? id;
   final String nome;
-  final int quantidadeSalas;
   final String descricao;
+  final int quantidadeSalas;
 
-  Localidade(
+  Localidade({
     this.id,
-    this.nome,
-    this.quantidadeSalas,
-    this.descricao,
-  );
+    required this.nome,
+    required this.descricao,
+    required this.quantidadeSalas,
+  });
 
   @override
   String toString() {

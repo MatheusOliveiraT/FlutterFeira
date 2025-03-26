@@ -1,7 +1,4 @@
-// ignore_for_file: file_names
-
 import 'package:flutter/material.dart';
-import 'atividadeModel.dart';
 
 class Atividades extends StatefulWidget {
   const Atividades({super.key});
@@ -175,28 +172,6 @@ class _AtividadesState extends State<Atividades> {
                     child: const Text('Cadastrar'),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        final String nome = _controladorNome.text;
-                        final String localidade =
-                            _controladorSublocalidade.text;
-                        final int? quantidadeMonitores =
-                            int.tryParse(_controladorQuantidadeMonitores.text);
-                        final String tipo = _controladorTipo.text;
-                        final String duracaoSecao =
-                            _controladorDuracaoSecao.text;
-                        final int? capacidadeVisitantes =
-                            int.tryParse(_controladorCapacidadeVisitantes.text);
-                        final String status = _controladorStatus.text;
-
-                        final Atividade atividadeNovo = Atividade(
-                            nome,
-                            localidade,
-                            quantidadeMonitores!,
-                            tipo,
-                            duracaoSecao,
-                            capacidadeVisitantes!,
-                            status);
-                        // ignore: avoid_print
-                        print(atividadeNovo);
                         final snackBar = SnackBar(
                           content: const Text('Atividade criada com sucesso!'),
                           duration:
