@@ -17,12 +17,24 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Feira de profissões'),
       ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.pushNamed(context, 'cadastro');
-          },
-          child: const Text('Cadastros'),
-        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, 'cadastro');
+              },
+              child: const Text('Cadastros'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, 'usuario');
+              },
+              child: const Text('Usuários'),
+            ),
+          ],
+        )
       ),
     );
   }
