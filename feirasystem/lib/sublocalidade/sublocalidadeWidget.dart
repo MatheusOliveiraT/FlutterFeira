@@ -90,11 +90,13 @@ class _SublocalidadesState extends State<Sublocalidades> {
                       controller: _controladorNome,
                       decoration: const InputDecoration(labelText: 'Nome'),
                     ),
+                    const SizedBox(height: 10),
                     TextField(
                       controller: _controladorDescricao,
                       decoration: const InputDecoration(labelText: 'Descrição'),
                     ),
-                    DropdownButton<Localidade>(
+                    const SizedBox(height: 10),
+                    DropdownButtonFormField<Localidade>(
                       value: _localidadeSelecionada,
                       hint: const Text("Selecione uma localidade"),
                       items: _localidades.map((Localidade localidade) {

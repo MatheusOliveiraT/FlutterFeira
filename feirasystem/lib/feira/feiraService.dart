@@ -24,7 +24,7 @@ class FeiraService {
       },
       onError: (DioException e, handler) {
         if (e.response?.statusCode == 401) {
-          print('Token expirado ou inválido');
+          // TO DO: INVALID/EXPIRED TOKEN
         }
         return handler.next(e);
       },
@@ -33,7 +33,7 @@ class FeiraService {
 
   Future<List<Feira>> getFeiras() async {
     try {
-      final response = await _dio.get('/feira');
+      final response = await _dio.get('/feiras');
       final List<dynamic> data = response.data['data'];
       return data.map((item) => Feira.fromJson(item)).toList();
     } catch (e) {
@@ -41,9 +41,9 @@ class FeiraService {
     }
   }
 
-  Future<Feira> getFeira(String id) async {
+  Future<Feira> getFeira(int id) async {
     try {
-      final response = await _dio.get('/feira/$id');
+      final response = await _dio.get('/feiras/$id');
       return Feira.fromJson(response.data['data']);
     } catch (e) {
       throw 'Erro ao carregar feira: ${e.toString()}';
@@ -52,7 +52,7 @@ class FeiraService {
 
   Future<Feira> createFeira(Feira feira) async {
     try {
-      final response = await _dio.post('/feira', data: {
+      final response = await _dio.post('/feiras', data: {
         'data': {
           'nome': feira.nome,
         }
@@ -63,9 +63,9 @@ class FeiraService {
     }
   }
 
-  Future<Feira> updateFeira(String id, Feira feira) async {
+  Future<Feira> updateFeira(int id, Feira feira) async {
     try {
-      final response = await _dio.put('/feira/$id', data: {
+      final response = await _dio.put('/feiras/$id', data: {
         'data': {
           'nome': feira.nome,
         }
@@ -76,9 +76,9 @@ class FeiraService {
     }
   }
 
-  Future<void> deleteFeira(String id) async {
+  Future<void> deleteFeira(int id) async {
     try {
-      await _dio.delete('/feira/$id');
+      await _dio.delete('/feiras/$id');
     } catch (e) {
       throw 'Erro ao deletar feira: ${e.toString()}';
     }

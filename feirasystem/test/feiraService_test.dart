@@ -2,9 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:dio/dio.dart';
-import 'package:feirasystem/feira/feiraModel.dart'; // Substitua pelo caminho correto do arquivo
+import 'package:feirasystem/feira/feiraModel.dart';
 import 'package:feirasystem/feira/feiraService.dart';
 import 'feiraService_test.mocks.dart';
+
+// por enquanto os testes não funcionam com o interceptor
 
 @GenerateMocks([Dio])
 void main() {
@@ -24,11 +26,11 @@ void main() {
         'data': [
           {
             'id': 1,
-            'attributes': {'documentId': '123', 'nome': 'Feira Orgânica'}
+            'attributes': {'nome': 'Feira Orgânica'}
           },
           {
             'id': 2,
-            'attributes': {'documentId': '456', 'nome': 'Feira Artesanal'}
+            'attributes': {'nome': 'Feira Artesanal'}
           }
         ]
       };
@@ -65,7 +67,7 @@ void main() {
       final mockResponse = {
         'data': {
           'id': 1,
-          'attributes': {'documentId': '123', 'nome': 'Feira Orgânica'}
+          'attributes': {'nome': 'Feira Orgânica'}
         }
       };
 
@@ -77,7 +79,7 @@ void main() {
         ),
       );
 
-      final feira = await feiraService.getFeira('1');
+      final feira = await feiraService.getFeira(1);
 
       expect(feira, isA<Feira>());
       expect(feira.nome, 'Feira Orgânica');
@@ -121,7 +123,7 @@ void main() {
         ),
       );
 
-      final updatedFeira = await feiraService.updateFeira('1', feira);
+      final updatedFeira = await feiraService.updateFeira(1, feira);
       expect(updatedFeira.nome, 'Feira Atualizada');
     });
 
@@ -133,7 +135,7 @@ void main() {
         ),
       );
 
-      await feiraService.deleteFeira('1');
+      await feiraService.deleteFeira(1);
       verify(mockDio.delete('/feira/1')).called(1);
     });
   });

@@ -1,9 +1,8 @@
 class Feira {
   final int? id;
-  final String? documentId;
   final String nome;
 
-  Feira({this.id, this.documentId, required this.nome});
+  Feira({this.id, required this.nome});
 
   @override
   String toString() {
@@ -15,13 +14,11 @@ class Feira {
       final attributes = json['attributes'];
       return Feira(
         id: json['id'],
-        documentId: attributes['documentId'],
         nome: attributes['nome'],
       );
     }
     return Feira(
       id: int.parse(json['id'].toString()),
-      documentId: json['documentId'],
       nome: json['nome'],
     );
   }
