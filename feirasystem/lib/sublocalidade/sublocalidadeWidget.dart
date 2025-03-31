@@ -1,22 +1,20 @@
-// ignore_for_file: file_names
-
 import 'package:feirasystem/localidade/localidadeModel.dart';
-import 'sublocalidadeModel.dart';
+import 'package:feirasystem/localidade/localidadeService.dart';
+import 'package:feirasystem/sublocalidade/sublocalidadeModel.dart';
+import 'package:feirasystem/sublocalidade/sublocalidadeService.dart';
 import 'package:flutter/material.dart';
 
 class Sublocalidades extends StatefulWidget {
   const Sublocalidades({super.key});
   @override
-  // ignore: library_private_types_in_public_api
   _SublocalidadesState createState() => _SublocalidadesState();
 }
 
 class _SublocalidadesState extends State<Sublocalidades> {
-  final List<Localidade> _localidades = [
-    Localidade(0, 'Bloco A', 15, 'Bloco A da UTFPR'),
-    Localidade(1, 'Bloco B', 4, 'Bloco B da UTFPR')
-  ];
-  List<Sublocalidade> _sublocalidades = [];
+  final LocalidadeService _localidadeService = LocalidadeService();
+  final SublocalidadeService _sublocalidadeService = SublocalidadeService();
+  late Future<List<Localidade>> _localidades;
+  late Future<List<Sublocalidade>> _sublocalidades;
 
   final TextEditingController _controladorNome = TextEditingController();
   final TextEditingController _controladorDescricao = TextEditingController();
@@ -25,14 +23,7 @@ class _SublocalidadesState extends State<Sublocalidades> {
   @override
   void initState() {
     super.initState();
-    _sublocalidades = [
-      Sublocalidade(
-          0, 'Aquário', 'Aquário', _localidades.firstWhere((l) => l.id == 0)),
-      Sublocalidade(1, 'B102', 'Andar superior',
-          _localidades.firstWhere((l) => l.id == 1)),
-      Sublocalidade(2, 'B103', 'Andar superior',
-          _localidades.firstWhere((l) => l.id == 1)),
-    ];
+    _atualizarLocalidades();
     _atualizarSublocalidades();
   }
 
@@ -43,9 +34,15 @@ class _SublocalidadesState extends State<Sublocalidades> {
     super.dispose();
   }
 
+  Future<void> _atualizarLocalidades() async {
+    setState(() {
+      _localidades = _localidadeService.getLocalidades();
+    });
+  }
+
   Future<void> _atualizarSublocalidades() async {
     setState(() {
-      // RETRIEVE
+      _sublocalidades = _sublocalidadeService.getSublocalidades();
     });
   }
 
@@ -53,21 +50,18 @@ class _SublocalidadesState extends State<Sublocalidades> {
     String nome = _controladorNome.text.trim();
     String descricao = _controladorDescricao.text.trim();
     if (nome.isEmpty || descricao.isEmpty || _localidadeSelecionada == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Preencha todos os campos obrigatórios!'),
-            duration: Duration(seconds: 1)),
-      );
+      _mostrarSnackBar('Preencha todos os campos obrigatórios!');
       return false;
     }
     return true;
   }
 
-  void _mostrarFormSublocalidade({Sublocalidade? sublocalidade}) {
+  void _mostrarFormSublocalidade({Sublocalidade? sublocalidade}) async {
     if (sublocalidade != null) {
       _controladorNome.text = sublocalidade.nome;
       _controladorDescricao.text = sublocalidade.descricao;
-      _localidadeSelecionada = sublocalidade.localidade;
+      _localidadeSelecionada =
+          await _localidadeService.getLocalidade(sublocalidade.idLocalidade);
     } else {
       _controladorNome.clear();
       _controladorDescricao.clear();
@@ -96,21 +90,37 @@ class _SublocalidadesState extends State<Sublocalidades> {
                       decoration: const InputDecoration(labelText: 'Descrição'),
                     ),
                     const SizedBox(height: 10),
-                    DropdownButtonFormField<Localidade>(
-                      value: _localidadeSelecionada,
-                      hint: const Text("Selecione uma localidade"),
-                      items: _localidades.map((Localidade localidade) {
-                        return DropdownMenuItem<Localidade>(
-                          value: localidade,
-                          child: Text(localidade.nome),
-                        );
-                      }).toList(),
-                      onChanged: (Localidade? novaLocalidade) {
-                        setStateDialog(() {
-                          _localidadeSelecionada = novaLocalidade;
-                        });
+                    FutureBuilder<List<Localidade>>(
+                      future: _localidades,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Erro: ${snapshot.error}');
+                        } else if (!snapshot.hasData ||
+                            snapshot.data!.isEmpty) {
+                          return const Text('Nenhuma localidade encontrada');
+                        } else {
+                          final localidades = snapshot.data!;
+                          return DropdownButtonFormField<Localidade>(
+                            value: _localidadeSelecionada,
+                            hint: const Text("Selecione uma localidade"),
+                            items: localidades.map((Localidade localidade) {
+                              return DropdownMenuItem<Localidade>(
+                                value: localidade,
+                                child: Text(localidade.nome),
+                              );
+                            }).toList(),
+                            onChanged: (Localidade? novaLocalidade) {
+                              setStateDialog(() {
+                                _localidadeSelecionada = novaLocalidade;
+                              });
+                            },
+                          );
+                        }
                       },
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -120,21 +130,27 @@ class _SublocalidadesState extends State<Sublocalidades> {
                   child: const Text('Voltar'),
                 ),
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_validarForm()) {
-                      if (sublocalidade != null) {
-                        // UPDATE
-                      } else {
-                        // CREATE
+                      try {
+                        final novaSublocalidade = Sublocalidade(
+                          nome: _controladorNome.text,
+                          descricao: _controladorDescricao.text,
+                          idLocalidade: _localidadeSelecionada!.id!,
+                        );
+                        if (sublocalidade != null) {
+                          await _sublocalidadeService.updateSublocalidade(
+                              sublocalidade.id!, novaSublocalidade);
+                        } else {
+                          await _sublocalidadeService
+                              .createSublocalidade(novaSublocalidade);
+                        }
+                        Navigator.pop(context);
+                        _mostrarSnackBar(
+                            '${sublocalidade == null ? 'Sublocalidade criada' : '${sublocalidade.nome} atualizado(a)'} com sucesso!');
+                      } catch (e) {
+                        _mostrarSnackBar(e.toString());
                       }
-                      Navigator.pop(context);
-                      final snackBar = SnackBar(
-                        content: Text(
-                            '${sublocalidade == null ? 'Sublocalidade criada' : '${sublocalidade.nome} atualizado(a)'} com sucesso!'),
-                        duration:
-                            const Duration(seconds: 2), // Duração da mensagem
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     }
                   },
                   child: Text(sublocalidade == null ? 'Criar' : 'Atualizar'),
@@ -168,14 +184,16 @@ class _SublocalidadesState extends State<Sublocalidades> {
     );
 
     if (confirm == true) {
-      // DELETE
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Sublocalidade excluída com sucesso.'),
-            duration: Duration(seconds: 2)),
-      );
+      await _sublocalidadeService.deleteSublocalidade(sublocalidade.id!);
+      _atualizarSublocalidades();
+      _mostrarSnackBar('Sublocalidade excluída com sucesso.');
     }
+  }
+
+  void _mostrarSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), duration: const Duration(seconds: 2)),
+    );
   }
 
   @override
@@ -186,41 +204,62 @@ class _SublocalidadesState extends State<Sublocalidades> {
       ),
       body: RefreshIndicator(
         onRefresh: _atualizarSublocalidades,
-        child: ListView.builder(
-          itemCount: _sublocalidades.length,
-          itemBuilder: (context, index) {
-            final sublocalidade = _sublocalidades[index];
-            return Dismissible(
-              key: Key(sublocalidade.id.toString()),
-              direction: DismissDirection.endToStart,
-              background: Container(
-                color: Colors.red,
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.only(right: 16),
-                child: const Icon(Icons.delete, color: Colors.white),
-              ),
-              onDismissed: (_) => _deleteSublocalidade(sublocalidade),
-              child: ListTile(
-                title: Text(sublocalidade.nome),
-                subtitle: Text(
-                  '${sublocalidade.descricao}\nLocalidade: ${sublocalidade.localidade.nome}',
-                ),
-                trailing: Row(
-                  mainAxisSize:
-                      MainAxisSize.min, // Makes the Row take minimum space
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () => _mostrarFormSublocalidade(
-                          sublocalidade: sublocalidade),
+        child: FutureBuilder<List<Sublocalidade>>(
+          future: _sublocalidades,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (snapshot.hasError) {
+              return Center(child: Text('Erro: ${snapshot.error}'));
+            }
+
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(
+                  child: Text('Nenhuma sublocalidade encontrada.'));
+            }
+
+            final sublocalidades = snapshot.data!;
+            final List<Localidade> localidades =
+                _localidades as List<Localidade>;
+
+            return ListView.builder(
+              itemCount: sublocalidades.length,
+              itemBuilder: (context, index) {
+                final sublocalidade = sublocalidades[index];
+                return Dismissible(
+                  key: Key(sublocalidade.id.toString()),
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    color: Colors.red,
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 16),
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  onDismissed: (_) => _deleteSublocalidade(sublocalidade),
+                  child: ListTile(
+                    title: Text(sublocalidade.nome),
+                    subtitle: Text(
+                      '${sublocalidade.descricao}\nLocalidade: ${localidades.firstWhere((localidade) => localidade.id == sublocalidade.idLocalidade).nome}',
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => _deleteSublocalidade(sublocalidade),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () => _mostrarFormSublocalidade(
+                              sublocalidade: sublocalidade),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () => _deleteSublocalidade(sublocalidade),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             );
           },
         ),

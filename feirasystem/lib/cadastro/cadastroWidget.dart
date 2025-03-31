@@ -1,5 +1,3 @@
-// ignore_for_file: file_names
-
 import 'package:flutter/material.dart';
 
 class Cadastro extends StatelessWidget {
@@ -28,13 +26,13 @@ class Cadastro extends StatelessWidget {
               },
               child: const Text('Sublocalidades'),
             ),
-            // const SizedBox(height: 20),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     Navigator.pushNamed(context, 'cadastro/atividade');
-            //   },
-            //   child: const Text('Atividades'),
-            // ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, 'cadastro/atividade');
+              },
+              child: const Text('Atividades'),
+            ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {

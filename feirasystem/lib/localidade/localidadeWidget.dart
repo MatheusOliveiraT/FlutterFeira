@@ -1,18 +1,16 @@
+import 'package:feirasystem/localidade/localidadeService.dart';
+import 'package:feirasystem/localidade/localidadeModel.dart';
 import 'package:flutter/material.dart';
-import 'localidadeModel.dart';
 
 class Localidades extends StatefulWidget {
   const Localidades({super.key});
   @override
-  // ignore: library_private_types_in_public_api
   _LocalidadesState createState() => _LocalidadesState();
 }
 
 class _LocalidadesState extends State<Localidades> {
-  final List<Localidade> _localidades = [
-    Localidade(0, 'Bloco A', 15, 'Bloco A da UTFPR'),
-    Localidade(1, 'Bloco B', 4, 'Bloco B da UTFPR')
-  ];
+  final LocalidadeService _localidadeService = LocalidadeService();
+  late Future<List<Localidade>> _localidades;
 
   final TextEditingController _controladorNome = TextEditingController();
   final TextEditingController _controladorQuantidadeSalas =
@@ -57,7 +55,7 @@ class _LocalidadesState extends State<Localidades> {
 
   Future<void> _atualizarLocalidades() async {
     setState(() {
-      // RETRIEVE
+      _localidades = _localidadeService.getLocalidades();
     });
   }
 
@@ -106,20 +104,28 @@ class _LocalidadesState extends State<Localidades> {
             child: const Text('Voltar'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               if (_validarForm()) {
-                if (localidade != null) {
-                  // UPDATE
-                } else {
-                  // CREATE
+                try {
+                  final novaLocalidade = Localidade(
+                    nome: _controladorNome.text,
+                    descricao: _controladorDescricao.text,
+                    quantidadeSalas:
+                        int.parse(_controladorQuantidadeSalas.text),
+                  );
+                  if (localidade != null) {
+                    await _localidadeService.updateLocalidade(
+                        localidade.id!, novaLocalidade);
+                  } else {
+                    await _localidadeService.createLocalidade(novaLocalidade);
+                  }
+                  Navigator.pop(context);
+                  _atualizarLocalidades();
+                  _mostrarSnackBar(
+                      '${localidade == null ? 'Localidade criada' : '${localidade.nome} atualizada'} com sucesso!');
+                } catch (e) {
+                  _mostrarSnackBar(e.toString());
                 }
-                Navigator.pop(context);
-                final snackBar = SnackBar(
-                  content: Text(
-                      '${localidade == null ? 'Localidade criada' : '${localidade.nome} atualizado(a)'} com sucesso!'),
-                  duration: const Duration(seconds: 2), // Duração da mensagem
-                );
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
               }
             },
             child: Text(localidade == null ? 'Criar' : 'Atualizar'),
@@ -150,59 +156,67 @@ class _LocalidadesState extends State<Localidades> {
     );
 
     if (confirm == true) {
-      // DELETE
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Localidade excluída com sucesso.'),
-            duration: Duration(seconds: 2)),
-      );
+      await _localidadeService.deleteLocalidade(localidade.id!);
+      _atualizarLocalidades();
+      _mostrarSnackBar('Localidade excluída com sucesso.');
     }
+  }
+
+  void _mostrarSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), duration: const Duration(seconds: 2)),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Localidades'),
-      ),
+      appBar: AppBar(title: const Text('Localidades')),
       body: RefreshIndicator(
         onRefresh: _atualizarLocalidades,
-        child: ListView.builder(
-          itemCount: _localidades.length,
-          itemBuilder: (context, index) {
-            final localidade = _localidades[index];
-            return Dismissible(
-              key: Key(localidade.id.toString()),
-              direction: DismissDirection.endToStart,
-              background: Container(
-                color: Colors.red,
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.only(right: 16),
-                child: const Icon(Icons.delete, color: Colors.white),
-              ),
-              onDismissed: (_) => _deleteLocalidade(localidade),
-              child: ListTile(
-                title: Text(localidade.nome),
-                subtitle: Text(
-                  '${localidade.descricao}\nQuantidade de salas: ${localidade.quantidadeSalas.toString()}',
-                ),
-                trailing: Row(
-                  mainAxisSize:
-                      MainAxisSize.min, // Makes the Row take minimum space
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () =>
-                          _mostrarFormLocalidade(localidade: localidade),
+        child: FutureBuilder<List<Localidade>>(
+          future: _localidades,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
+            final localidades = snapshot.data!;
+            return ListView.builder(
+              itemCount: localidades.length,
+              itemBuilder: (context, index) {
+                final localidade = localidades[index];
+                return Dismissible(
+                  key: Key(localidade.id.toString()),
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    color: Colors.red,
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 16),
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  onDismissed: (_) => _deleteLocalidade(localidade),
+                  child: ListTile(
+                    title: Text(localidade.nome),
+                    subtitle: Text(
+                        '${localidade.descricao}\nQuantidade de salas: ${localidade.quantidadeSalas}'),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () =>
+                                _mostrarFormLocalidade(localidade: localidade)),
+                        IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () => _deleteLocalidade(localidade)),
+                      ],
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => _deleteLocalidade(localidade),
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             );
           },
         ),

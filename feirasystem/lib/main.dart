@@ -1,3 +1,6 @@
+import 'package:feirasystem/pessoa/monitor/monitorWidget.dart';
+import 'package:feirasystem/pessoa/organizador/organizadorWidget.dart';
+import 'package:feirasystem/pessoa/pessoaWidget.dart';
 import 'package:feirasystem/agendamentoFeira/agendamentoFeiraWidget.dart';
 import 'package:feirasystem/atividade/atividadeWidget.dart';
 import 'package:feirasystem/cadastro/cadastroWidget.dart';
@@ -104,6 +107,9 @@ class ExpoUT extends StatelessWidget {
         'cadastro/atividade': (context) => const Atividades(),
         'cadastro/feira': (context) => const Feiras(),
         'cadastro/agendamentofeira': (context) => const AgendamentosFeira(),
+        'usuario': (context) => const Pessoas(),
+        'usuario/organizador': (context) => const Organizadores(),
+        'usuario/monitor': (context) => const Monitores(),
       },
     );
   }
