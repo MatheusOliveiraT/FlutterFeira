@@ -6,6 +6,26 @@ class Departamento {
 
   @override
   String toString() {
-    return 'Atividade{\nid: $id, \nnome: $nome\n}';
+    return 'Departamento {\n id: $id, \n nome: $nome\n}';
+  }
+
+  factory Departamento.fromJson(Map<String, dynamic> json) {
+    if (json['attributes'] != null) {
+      final attributes = json['attributes'];
+      return Departamento(
+        id: json['id'],
+        nome: attributes['nome'],
+      );
+    }
+    return Departamento(
+      id: int.parse(json['id'].toString()),
+      nome: json['nome'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'nome': nome,
+    };
   }
 }

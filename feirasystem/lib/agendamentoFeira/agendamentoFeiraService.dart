@@ -58,7 +58,6 @@ class AgendamentoFeiraService {
     try {
       final response = await _dio.post('/agendamentoFeiras', data: {
         'data': {
-          'id': agendamento.id,
           'data': agendamento.data.toIso8601String(),
           'turno': agendamento.turno.descricao,
           'idFeira': agendamento.idFeira,
@@ -76,7 +75,6 @@ class AgendamentoFeiraService {
     try {
       final response = await _dio.put('/agendamentoFeiras/$id', data: {
         'data': {
-          'id': agendamento.id,
           'data': agendamento.data.toIso8601String(),
           'turno': agendamento.turno.descricao,
           'idFeira': agendamento.idFeira,

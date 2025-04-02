@@ -1,3 +1,4 @@
+import 'package:feirasystem/departamento/departamentoWidget.dart';
 import 'package:feirasystem/pessoa/monitor/monitorWidget.dart';
 import 'package:feirasystem/pessoa/organizador/organizadorWidget.dart';
 import 'package:feirasystem/pessoa/pessoaWidget.dart';
@@ -6,6 +7,7 @@ import 'package:feirasystem/atividade/atividadeWidget.dart';
 import 'package:feirasystem/cadastro/cadastroWidget.dart';
 import 'package:feirasystem/feira/feiraWidget.dart';
 import 'package:feirasystem/localidade/localidadeWidget.dart';
+import 'package:feirasystem/professor/professorWidget.dart';
 import 'package:feirasystem/sublocalidade/sublocalidadeWidget.dart';
 import 'package:feirasystem/homepage/homePageWidget.dart';
 import 'package:flutter/material.dart';
@@ -107,6 +109,8 @@ class ExpoUT extends StatelessWidget {
         'cadastro/atividade': (context) => const Atividades(),
         'cadastro/feira': (context) => const Feiras(),
         'cadastro/agendamentofeira': (context) => const AgendamentosFeira(),
+        'cadastro/departamento': (context) => const Departamentos(),
+        'cadastro/professor': (context) => const Professores(),
         'usuario': (context) => const Pessoas(),
         'usuario/organizador': (context) => const Organizadores(),
         'usuario/monitor': (context) => const Monitores(),
