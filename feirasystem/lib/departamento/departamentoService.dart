@@ -8,7 +8,7 @@ class DepartamentoService {
   DepartamentoService([Dio? dio])
       : _dio = dio ??
             Dio(BaseOptions(
-              baseUrl: 'https://sua-api.com', // Defina a URL base da API
+              baseUrl: 'http://localhost:3000', // Defina a URL base da API
               headers: {
                 'Content-Type': 'application/json',
               },
@@ -34,7 +34,7 @@ class DepartamentoService {
   Future<List<Departamento>> getDepartamentos() async {
     try {
       final response = await _dio.get('/departamentos');
-      final List<dynamic> data = response.data['data'];
+      final List<dynamic> data = response.data;
       return data.map((item) => Departamento.fromJson(item)).toList();
     } catch (e) {
       throw 'Erro ao carregar departamentos: ${e.toString()}';
@@ -44,7 +44,7 @@ class DepartamentoService {
   Future<Departamento> getDepartamento(int id) async {
     try {
       final response = await _dio.get('/departamentos/$id');
-      return Departamento.fromJson(response.data['data']);
+      return Departamento.fromJson(response.data);
     } catch (e) {
       throw 'Erro ao carregar departamento: ${e.toString()}';
     }
@@ -53,25 +53,20 @@ class DepartamentoService {
   Future<Departamento> createDepartamento(Departamento departamento) async {
     try {
       final response = await _dio.post('/departamentos', data: {
-        'data': {
-          'nome': departamento.nome,
-        }
+        'nome': departamento.nome,
       });
-      return Departamento.fromJson(response.data['data']);
+      return Departamento.fromJson(response.data);
     } catch (e) {
       throw 'Erro ao criar departamento: ${e.toString()}';
     }
   }
 
-  Future<Departamento> updateDepartamento(
-      int id, Departamento departamento) async {
+  Future<void> updateDepartamento(int id, Departamento departamento) async {
     try {
-      final response = await _dio.put('/departamentos/$id', data: {
-        'data': {
-          'nome': departamento.nome,
-        }
+      await _dio.put('/departamentos/$id', data: {
+        'nome': departamento.nome,
       });
-      return Departamento.fromJson(response.data['data']);
+      return;
     } catch (e) {
       throw 'Erro ao atualizar departamento: ${e.toString()}';
     }

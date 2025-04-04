@@ -123,8 +123,7 @@ void main() {
         ),
       );
 
-      final updatedFeira = await feiraService.updateFeira(1, feira);
-      expect(updatedFeira.nome, 'Feira Atualizada');
+      await feiraService.updateFeira(1, feira);
     });
 
     test('deve deletar uma feira com sucesso', () async {

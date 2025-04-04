@@ -17,19 +17,10 @@ class Localidade {
   }
 
   factory Localidade.fromJson(Map<String, dynamic> json) {
-    if (json['attributes'] != null) {
-      final attributes = json['attributes'];
-      return Localidade(
-        id: json['id'],
-        nome: attributes['nome'],
-        quantidadeSalas: attributes['quantidadeSalas'],
-        descricao: attributes['descricao'],
-      );
-    }
     return Localidade(
       id: int.parse(json['id'].toString()),
       nome: json['nome'],
-      quantidadeSalas: json['quantidadeSalas'],
+      quantidadeSalas: int.parse(json['quantidadeSalas'].toString()),
       descricao: json['descricao'],
     );
   }

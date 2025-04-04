@@ -99,8 +99,10 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
     if (agendamentoFeira != null) {
       _controladorData.text =
           DateFormat('dd/MM/yyyy').format(agendamentoFeira.data);
-      _feiraSelecionada =
-          await _feiraService.getFeira(agendamentoFeira.idFeira);
+      _feiras.then((lista) {
+        _feiraSelecionada =
+            lista.firstWhere((feira) => feira.id == agendamentoFeira.idFeira);
+      });
       _turnoSelecionado = agendamentoFeira.turno;
     } else {
       _controladorData.clear();
@@ -197,7 +199,8 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
                   onPressed: () async {
                     if (_validarForm()) {
                       final newAgendamentoFeira = AgendamentoFeira(
-                          data: DateTime.parse(_controladorData.text),
+                          data: DateFormat('dd/MM/yyyy')
+                              .parse(_controladorData.text),
                           turno: _turnoSelecionado!,
                           idFeira: _feiraSelecionada!.id!);
                       if (agendamentoFeira != null) {
@@ -212,8 +215,7 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
                       final snackBar = SnackBar(
                         content: Text(
                             'Agendamento de feira ${agendamentoFeira == null ? 'criado' : 'atualizado'} com sucesso!'),
-                        duration:
-                            const Duration(seconds: 2), // Duração da mensagem
+                        duration: const Duration(seconds: 2),
                       );
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     }
@@ -267,8 +269,8 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
       ),
       body: RefreshIndicator(
         onRefresh: _atualizarAgendamentosFeira,
-        child: FutureBuilder<List<AgendamentoFeira>>(
-          future: _agendamentosFeira,
+        child: FutureBuilder<List<dynamic>>(
+          future: Future.wait([_agendamentosFeira, _feiras]),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -283,8 +285,8 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
                   child: Text('Nenhum agendamento encontrado.'));
             }
 
-            final agendamentosFeira = snapshot.data!;
-            final List<Feira> feiras = _feiras as List<Feira>;
+            final List<AgendamentoFeira> agendamentosFeira = snapshot.data![0];
+            final List<Feira> feiras = snapshot.data![1];
 
             return ListView.builder(
               itemCount: agendamentosFeira.length,
@@ -309,8 +311,7 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
                       'Data: ${DateFormat('dd/MM/yyyy').format(agendamentoFeira.data)}\nTurno: ${agendamentoFeira.turno.descricao}',
                     ),
                     trailing: Row(
-                      mainAxisSize:
-                          MainAxisSize.min, // Makes the Row take minimum space
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
                           icon: const Icon(Icons.edit),

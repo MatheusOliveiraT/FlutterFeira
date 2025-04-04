@@ -150,9 +150,7 @@ void main() {
         ),
       );
 
-      final updatedAgendamento =
-          await agendamentoService.updateAgendamento(1, agendamento);
-      expect(updatedAgendamento.turno, Turno.NOITE);
+      await agendamentoService.updateAgendamento(1, agendamento);
     });
 
     test('deve deletar um agendamento com sucesso', () async {

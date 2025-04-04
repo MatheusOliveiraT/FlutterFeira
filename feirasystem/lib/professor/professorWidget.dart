@@ -56,8 +56,10 @@ class _ProfessoresState extends State<Professores> {
   void _mostrarFormProfessor({Professor? professor}) async {
     if (professor != null) {
       _controladorNome.text = professor.nome;
-      _departamentoSelecionado =
-          await _departamentoService.getDepartamento(professor.idDepartamento);
+      _departamentos.then((lista) {
+        _departamentoSelecionado = lista.firstWhere(
+            (departamento) => departamento.id == professor.idDepartamento);
+      });
     } else {
       _controladorNome.clear();
       _departamentoSelecionado = null;
@@ -183,8 +185,8 @@ class _ProfessoresState extends State<Professores> {
       appBar: AppBar(title: const Text('Professores')),
       body: RefreshIndicator(
         onRefresh: _atualizarProfessores,
-        child: FutureBuilder<List<Professor>>(
-          future: _professores,
+        child: FutureBuilder<List<dynamic>>(
+          future: Future.wait([_professores, _departamentos]),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -195,9 +197,8 @@ class _ProfessoresState extends State<Professores> {
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return const Center(child: Text('Nenhum professor encontrado.'));
             }
-            final professores = snapshot.data!;
-            final List<Departamento> departamentos =
-                _departamentos as List<Departamento>;
+            final professores = snapshot.data![0];
+            final departamentos = snapshot.data![1];
             return ListView.builder(
               itemCount: professores.length,
               itemBuilder: (context, index) {

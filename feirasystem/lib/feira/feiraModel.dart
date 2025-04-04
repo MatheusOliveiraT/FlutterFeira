@@ -10,13 +10,6 @@ class Feira {
   }
 
   factory Feira.fromJson(Map<String, dynamic> json) {
-    if (json['attributes'] != null) {
-      final attributes = json['attributes'];
-      return Feira(
-        id: json['id'],
-        nome: attributes['nome'],
-      );
-    }
     return Feira(
       id: int.parse(json['id'].toString()),
       nome: json['nome'],

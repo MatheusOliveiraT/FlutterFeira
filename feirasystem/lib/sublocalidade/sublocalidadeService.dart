@@ -8,7 +8,7 @@ class SublocalidadeService {
   SublocalidadeService([Dio? dio])
       : _dio = dio ??
             Dio(BaseOptions(
-              baseUrl: 'https://sua-api.com', // Defina a URL base da API
+              baseUrl: 'http://localhost:3000',
               headers: {
                 'Content-Type': 'application/json',
               },
@@ -34,7 +34,7 @@ class SublocalidadeService {
   Future<List<Sublocalidade>> getSublocalidades() async {
     try {
       final response = await _dio.get('/sublocalidades');
-      final List<dynamic> data = response.data['data'];
+      final List<dynamic> data = response.data;
       return data.map((item) => Sublocalidade.fromJson(item)).toList();
     } catch (e) {
       throw 'Erro ao carregar sublocalidades: ${e.toString()}';
@@ -44,7 +44,7 @@ class SublocalidadeService {
   Future<Sublocalidade> getSublocalidade(int id) async {
     try {
       final response = await _dio.get('/sublocalidades/$id');
-      return Sublocalidade.fromJson(response.data['data']);
+      return Sublocalidade.fromJson(response.data);
     } catch (e) {
       throw 'Erro ao carregar sublocalidade: ${e.toString()}';
     }
@@ -53,29 +53,24 @@ class SublocalidadeService {
   Future<Sublocalidade> createSublocalidade(Sublocalidade sublocalidade) async {
     try {
       final response = await _dio.post('/sublocalidades', data: {
-        'data': {
-          'nome': sublocalidade.nome,
-          'descricao': sublocalidade.descricao,
-          'idLocalidade': sublocalidade.idLocalidade,
-        }
+        'nome': sublocalidade.nome,
+        'descricao': sublocalidade.descricao,
+        'idLocalidade': sublocalidade.idLocalidade.toString(),
       });
-      return Sublocalidade.fromJson(response.data['data']);
+      return Sublocalidade.fromJson(response.data);
     } catch (e) {
       throw 'Erro ao criar sublocalidade: ${e.toString()}';
     }
   }
 
-  Future<Sublocalidade> updateSublocalidade(
-      int id, Sublocalidade sublocalidade) async {
+  Future<void> updateSublocalidade(int id, Sublocalidade sublocalidade) async {
     try {
-      final response = await _dio.put('/sublocalidades/$id', data: {
-        'data': {
-          'nome': sublocalidade.nome,
-          'descricao': sublocalidade.descricao,
-          'idLocalidade': sublocalidade.idLocalidade,
-        }
+      await _dio.put('/sublocalidades/$id', data: {
+        'nome': sublocalidade.nome,
+        'descricao': sublocalidade.descricao,
+        'idLocalidade': sublocalidade.idLocalidade.toString(),
       });
-      return Sublocalidade.fromJson(response.data['data']);
+      return;
     } catch (e) {
       throw 'Erro ao atualizar sublocalidade: ${e.toString()}';
     }

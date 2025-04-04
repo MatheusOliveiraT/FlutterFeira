@@ -8,7 +8,7 @@ class ProfessorService {
   ProfessorService([Dio? dio])
       : _dio = dio ??
             Dio(BaseOptions(
-              baseUrl: 'https://sua-api.com', // Defina a URL base da API
+              baseUrl: 'http://localhost:3000',
               headers: {
                 'Content-Type': 'application/json',
               },
@@ -34,7 +34,7 @@ class ProfessorService {
   Future<List<Professor>> getProfessores() async {
     try {
       final response = await _dio.get('/professores');
-      final List<dynamic> data = response.data['data'];
+      final List<dynamic> data = response.data;
       return data.map((item) => Professor.fromJson(item)).toList();
     } catch (e) {
       throw 'Erro ao carregar professores: ${e.toString()}';
@@ -44,7 +44,7 @@ class ProfessorService {
   Future<Professor> getProfessor(int id) async {
     try {
       final response = await _dio.get('/professores/$id');
-      return Professor.fromJson(response.data['data']);
+      return Professor.fromJson(response.data);
     } catch (e) {
       throw 'Erro ao carregar professor: ${e.toString()}';
     }
@@ -53,26 +53,22 @@ class ProfessorService {
   Future<Professor> createProfessor(Professor professor) async {
     try {
       final response = await _dio.post('/professores', data: {
-        'data': {
-          'nome': professor.nome,
-          'idDepartamento': professor.idDepartamento,
-        }
+        'nome': professor.nome,
+        'idDepartamento': professor.idDepartamento.toString(),
       });
-      return Professor.fromJson(response.data['data']);
+      return Professor.fromJson(response.data);
     } catch (e) {
       throw 'Erro ao criar professor: ${e.toString()}';
     }
   }
 
-  Future<Professor> updateProfessor(int id, Professor professor) async {
+  Future<void> updateProfessor(int id, Professor professor) async {
     try {
-      final response = await _dio.put('/professores/$id', data: {
-        'data': {
-          'nome': professor.nome,
-          'idDepartamento': professor.idDepartamento,
-        }
+      await _dio.put('/professores/$id', data: {
+        'nome': professor.nome,
+        'idDepartamento': professor.idDepartamento.toString(),
       });
-      return Professor.fromJson(response.data['data']);
+      return;
     } catch (e) {
       throw 'Erro ao atualizar professor: ${e.toString()}';
     }

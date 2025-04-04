@@ -8,7 +8,7 @@ class FeiraService {
   FeiraService([Dio? dio])
       : _dio = dio ??
             Dio(BaseOptions(
-              baseUrl: 'https://sua-api.com', // Defina a URL base da API
+              baseUrl: 'http://localhost:3000',
               headers: {
                 'Content-Type': 'application/json',
               },
@@ -34,7 +34,7 @@ class FeiraService {
   Future<List<Feira>> getFeiras() async {
     try {
       final response = await _dio.get('/feiras');
-      final List<dynamic> data = response.data['data'];
+      final List<dynamic> data = response.data;
       return data.map((item) => Feira.fromJson(item)).toList();
     } catch (e) {
       throw 'Erro ao carregar feiras: ${e.toString()}';
@@ -44,7 +44,7 @@ class FeiraService {
   Future<Feira> getFeira(int id) async {
     try {
       final response = await _dio.get('/feiras/$id');
-      return Feira.fromJson(response.data['data']);
+      return Feira.fromJson(response.data);
     } catch (e) {
       throw 'Erro ao carregar feira: ${e.toString()}';
     }
@@ -53,24 +53,20 @@ class FeiraService {
   Future<Feira> createFeira(Feira feira) async {
     try {
       final response = await _dio.post('/feiras', data: {
-        'data': {
-          'nome': feira.nome,
-        }
+        'nome': feira.nome,
       });
-      return Feira.fromJson(response.data['data']);
+      return Feira.fromJson(response.data);
     } catch (e) {
       throw 'Erro ao criar feira: ${e.toString()}';
     }
   }
 
-  Future<Feira> updateFeira(int id, Feira feira) async {
+  Future<void> updateFeira(int id, Feira feira) async {
     try {
-      final response = await _dio.put('/feiras/$id', data: {
-        'data': {
-          'nome': feira.nome,
-        }
+      await _dio.put('/feiras/$id', data: {
+        'nome': feira.nome,
       });
-      return Feira.fromJson(response.data['data']);
+      return;
     } catch (e) {
       throw 'Erro ao atualizar feira: ${e.toString()}';
     }

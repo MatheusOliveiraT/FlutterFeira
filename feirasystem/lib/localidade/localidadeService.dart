@@ -8,7 +8,7 @@ class LocalidadeService {
   LocalidadeService([Dio? dio])
       : _dio = dio ??
             Dio(BaseOptions(
-              baseUrl: 'https://sua-api.com', // Defina a URL base da API
+              baseUrl: 'http://localhost:3000',
               headers: {
                 'Content-Type': 'application/json',
               },
@@ -34,7 +34,7 @@ class LocalidadeService {
   Future<List<Localidade>> getLocalidades() async {
     try {
       final response = await _dio.get('/localidades');
-      final List<dynamic> data = response.data['data'];
+      final List<dynamic> data = response.data;
       return data.map((item) => Localidade.fromJson(item)).toList();
     } catch (e) {
       throw 'Erro ao carregar localidades: ${e.toString()}';
@@ -44,7 +44,7 @@ class LocalidadeService {
   Future<Localidade> getLocalidade(int id) async {
     try {
       final response = await _dio.get('/localidades/$id');
-      return Localidade.fromJson(response.data['data']);
+      return Localidade.fromJson(response.data);
     } catch (e) {
       throw 'Erro ao carregar localidade: ${e.toString()}';
     }
@@ -53,28 +53,24 @@ class LocalidadeService {
   Future<Localidade> createLocalidade(Localidade localidade) async {
     try {
       final response = await _dio.post('/localidades', data: {
-        'data': {
-          'nome': localidade.nome,
-          'quantidadeSalas': localidade.quantidadeSalas,
-          'descricao': localidade.descricao,
-        }
+        'nome': localidade.nome,
+        'descricao': localidade.descricao,
+        'quantidadeSalas': localidade.quantidadeSalas.toString(),
       });
-      return Localidade.fromJson(response.data['data']);
+      return Localidade.fromJson(response.data);
     } catch (e) {
       throw 'Erro ao criar localidade: ${e.toString()}';
     }
   }
 
-  Future<Localidade> updateLocalidade(int id, Localidade localidade) async {
+  Future<void> updateLocalidade(int id, Localidade localidade) async {
     try {
-      final response = await _dio.put('/localidades/$id', data: {
-        'data': {
-          'nome': localidade.nome,
-          'quantidadeSalas': localidade.quantidadeSalas,
-          'descricao': localidade.descricao,
-        }
+      await _dio.put('/localidades/$id', data: {
+        'nome': localidade.nome,
+        'descricao': localidade.descricao,
+        'quantidadeSalas': localidade.quantidadeSalas.toString(),
       });
-      return Localidade.fromJson(response.data['data']);
+      return;
     } catch (e) {
       throw 'Erro ao atualizar localidade: ${e.toString()}';
     }

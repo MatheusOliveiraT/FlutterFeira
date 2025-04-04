@@ -10,13 +10,6 @@ class Departamento {
   }
 
   factory Departamento.fromJson(Map<String, dynamic> json) {
-    if (json['attributes'] != null) {
-      final attributes = json['attributes'];
-      return Departamento(
-        id: json['id'],
-        nome: attributes['nome'],
-      );
-    }
     return Departamento(
       id: int.parse(json['id'].toString()),
       nome: json['nome'],

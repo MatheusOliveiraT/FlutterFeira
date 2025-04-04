@@ -60,8 +60,10 @@ class _SublocalidadesState extends State<Sublocalidades> {
     if (sublocalidade != null) {
       _controladorNome.text = sublocalidade.nome;
       _controladorDescricao.text = sublocalidade.descricao;
-      _localidadeSelecionada =
-          await _localidadeService.getLocalidade(sublocalidade.idLocalidade);
+      _localidades.then((lista) {
+        _localidadeSelecionada = lista.firstWhere(
+            (localidade) => localidade.id == sublocalidade.idLocalidade);
+      });
     } else {
       _controladorNome.clear();
       _controladorDescricao.clear();
@@ -146,6 +148,7 @@ class _SublocalidadesState extends State<Sublocalidades> {
                               .createSublocalidade(novaSublocalidade);
                         }
                         Navigator.pop(context);
+                        _atualizarSublocalidades();
                         _mostrarSnackBar(
                             '${sublocalidade == null ? 'Sublocalidade criada' : '${sublocalidade.nome} atualizado(a)'} com sucesso!');
                       } catch (e) {
@@ -204,8 +207,8 @@ class _SublocalidadesState extends State<Sublocalidades> {
       ),
       body: RefreshIndicator(
         onRefresh: _atualizarSublocalidades,
-        child: FutureBuilder<List<Sublocalidade>>(
-          future: _sublocalidades,
+        child: FutureBuilder<List<dynamic>>(
+          future: Future.wait([_sublocalidades, _localidades]),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -220,9 +223,8 @@ class _SublocalidadesState extends State<Sublocalidades> {
                   child: Text('Nenhuma sublocalidade encontrada.'));
             }
 
-            final sublocalidades = snapshot.data!;
-            final List<Localidade> localidades =
-                _localidades as List<Localidade>;
+            final sublocalidades = snapshot.data![0];
+            final localidades = snapshot.data![1];
 
             return ListView.builder(
               itemCount: sublocalidades.length,

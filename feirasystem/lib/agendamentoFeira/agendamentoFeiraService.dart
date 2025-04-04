@@ -8,7 +8,7 @@ class AgendamentoFeiraService {
   AgendamentoFeiraService([Dio? dio])
       : _dio = dio ??
             Dio(BaseOptions(
-              baseUrl: 'https://sua-api.com', // Defina a URL base da API
+              baseUrl: 'http://localhost:3000',
               headers: {
                 'Content-Type': 'application/json',
               },
@@ -31,62 +31,52 @@ class AgendamentoFeiraService {
     ));
   }
 
-  // Método para pegar todos os agendamentos de feira
   Future<List<AgendamentoFeira>> getAgendamentos() async {
     try {
       final response = await _dio.get('/agendamentoFeiras');
-      final List<dynamic> data = response.data['data'];
+      final List<dynamic> data = response.data;
       return data.map((item) => AgendamentoFeira.fromJson(item)).toList();
     } catch (e) {
       throw 'Erro ao carregar agendamentos: ${e.toString()}';
     }
   }
 
-  // Método para pegar um agendamento específico
   Future<AgendamentoFeira> getAgendamento(int id) async {
     try {
       final response = await _dio.get('/agendamentoFeiras/$id');
-      return AgendamentoFeira.fromJson(response.data['data']);
+      return AgendamentoFeira.fromJson(response.data);
     } catch (e) {
       throw 'Erro ao carregar agendamento: ${e.toString()}';
     }
   }
 
-  // Método para criar um novo agendamento de feira
   Future<AgendamentoFeira> createAgendamento(
       AgendamentoFeira agendamento) async {
     try {
       final response = await _dio.post('/agendamentoFeiras', data: {
-        'data': {
-          'data': agendamento.data.toIso8601String(),
-          'turno': agendamento.turno.descricao,
-          'idFeira': agendamento.idFeira,
-        }
+        'data': agendamento.data.toIso8601String(),
+        'turno': agendamento.turno.descricao,
+        'idFeira': agendamento.idFeira.toString(),
       });
-      return AgendamentoFeira.fromJson(response.data['data']);
+      return AgendamentoFeira.fromJson(response.data);
     } catch (e) {
       throw 'Erro ao criar agendamento: ${e.toString()}';
     }
   }
 
-  // Método para atualizar um agendamento existente
-  Future<AgendamentoFeira> updateAgendamento(
-      int id, AgendamentoFeira agendamento) async {
+  Future<void> updateAgendamento(int id, AgendamentoFeira agendamento) async {
     try {
-      final response = await _dio.put('/agendamentoFeiras/$id', data: {
-        'data': {
-          'data': agendamento.data.toIso8601String(),
-          'turno': agendamento.turno.descricao,
-          'idFeira': agendamento.idFeira,
-        }
+      await _dio.put('/agendamentoFeiras/$id', data: {
+        'data': agendamento.data.toIso8601String(),
+        'turno': agendamento.turno.descricao,
+        'idFeira': agendamento.idFeira.toString(),
       });
-      return AgendamentoFeira.fromJson(response.data['data']);
+      return;
     } catch (e) {
       throw 'Erro ao atualizar agendamento: ${e.toString()}';
     }
   }
 
-  // Método para deletar um agendamento
   Future<void> deleteAgendamento(int id) async {
     try {
       await _dio.delete('/agendamentoFeira/$id');

@@ -39,26 +39,14 @@ class AtividadeLocalidade extends Atividade {
   }
 
   factory AtividadeLocalidade.fromJson(Map<String, dynamic> json) {
-    if (json['attributes'] != null) {
-      final attributes = json['attributes'];
-      return AtividadeLocalidade(
-        id: json['id'],
-        nome: attributes['nome'],
-        descricao: attributes['descricao'],
-        quantidadeMonitores: attributes['quantidadeMonitores'],
-        idLocalidade: attributes['idLocalidade'],
-        idProfessor: attributes['idProfessor'],
-        idFeira: attributes['idFeira'],
-      );
-    }
     return AtividadeLocalidade(
       id: int.parse(json['id'].toString()),
       nome: json['nome'],
       descricao: json['descricao'],
       quantidadeMonitores: int.parse(json['quantidadeMonitores'].toString()),
-      idLocalidade: int.parse(json['idLocalidade']),
-      idProfessor: int.parse(json['idProfessor']),
-      idFeira: int.parse(json['idFeira']),
+      idLocalidade: int.parse(json['idLocalidade'].toString()),
+      idProfessor: int.parse(json['idProfessor'].toString()),
+      idFeira: int.parse(json['idFeira'].toString()),
     );
   }
 
@@ -152,29 +140,13 @@ class AtividadeSublocalidade extends Atividade {
   }
 
   factory AtividadeSublocalidade.fromJson(Map<String, dynamic> json) {
-    if (json['attributes'] != null) {
-      final attributes = json['attributes'];
-      return AtividadeSublocalidade(
-        id: json['id'],
-        nome: attributes['nome'],
-        descricao: attributes['descricao'],
-        quantidadeMonitores: attributes['quantidadeMonitores'],
-        duracaoSecao: attributes['duracaoSecao'],
-        capacidadeVisitantes: attributes['capacidadeVisitantes'],
-        idSublocalidade: attributes['idSublocalidade'],
-        idProfessor: attributes['idProfessor'],
-        idFeira: attributes['idFeira'],
-        status: StatusExtensao.fromString(attributes['status']),
-        tipo: TipoExtensao.fromString(attributes['tipo']),
-      );
-    }
     return AtividadeSublocalidade(
       id: int.parse(json['id'].toString()),
       nome: json['nome'],
       descricao: json['descricao'],
       quantidadeMonitores: int.parse(json['quantidadeMonitores'].toString()),
-      duracaoSecao: int.parse(json['duracaoSecao'].toString()),
-      capacidadeVisitantes: int.parse(json['capacidadeVisitantes'].toString()),
+      duracaoSecao: int.parse(json['duracao'].toString()),
+      capacidadeVisitantes: int.parse(json['capacidadeVisitante'].toString()),
       idSublocalidade: int.parse(json['idSublocalidade'].toString()),
       idProfessor: int.parse(json['idProfessor'].toString()),
       idFeira: int.parse(json['idFeira'].toString()),
@@ -188,8 +160,8 @@ class AtividadeSublocalidade extends Atividade {
       'nome': nome,
       'descricao': descricao,
       'quantidadeMontiroes': quantidadeMonitores,
-      'duracaoSecao': duracaoSecao,
-      'capacidadeVisitantes': capacidadeVisitantes,
+      'duracao': duracaoSecao,
+      'capacidadeVisitante': capacidadeVisitantes,
       'idSublocalidade': idSublocalidade,
       'idProfessor': idProfessor,
       'idFeira': idFeira,

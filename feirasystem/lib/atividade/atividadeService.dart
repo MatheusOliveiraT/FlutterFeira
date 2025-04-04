@@ -8,7 +8,7 @@ class AtividadeLocalidadeService {
   AtividadeLocalidadeService([Dio? dio])
       : _dio = dio ??
             Dio(BaseOptions(
-              baseUrl: 'https://sua-api.com', // Defina a URL base da API
+              baseUrl: 'http://localhost:3000',
               headers: {
                 'Content-Type': 'application/json',
               },
@@ -34,7 +34,7 @@ class AtividadeLocalidadeService {
   Future<List<AtividadeLocalidade>> getAtividades() async {
     try {
       final response = await _dio.get('/atividadeLocalidades');
-      final List<dynamic> data = response.data['data'];
+      final List<dynamic> data = response.data;
       return data.map((item) => AtividadeLocalidade.fromJson(item)).toList();
     } catch (e) {
       throw 'Erro ao carregar atividades: ${e.toString()}';
@@ -44,7 +44,7 @@ class AtividadeLocalidadeService {
   Future<AtividadeLocalidade> getAtividade(int id) async {
     try {
       final response = await _dio.get('/atividadeLocalidades/$id');
-      return AtividadeLocalidade.fromJson(response.data['data']);
+      return AtividadeLocalidade.fromJson(response.data);
     } catch (e) {
       throw 'Erro ao carregar atividade: ${e.toString()}';
     }
@@ -54,35 +54,30 @@ class AtividadeLocalidadeService {
       AtividadeLocalidade atividade) async {
     try {
       final response = await _dio.post('/atividadeLocalidades/', data: {
-        'data': {
-          'nome': atividade.nome,
-          'descricao': atividade.descricao,
-          'quantidadeMonitores': atividade.quantidadeMonitores,
-          'idLocalidade': atividade.idLocalidade,
-          'idProfessor': atividade.idProfessor,
-          'idFeira': atividade.idFeira,
-        }
+        'nome': atividade.nome,
+        'descricao': atividade.descricao,
+        'quantidadeMonitores': atividade.quantidadeMonitores.toString(),
+        'idLocalidade': atividade.idLocalidade.toString(),
+        'idProfessor': atividade.idProfessor.toString(),
+        'idFeira': atividade.idFeira.toString(),
       });
-      return AtividadeLocalidade.fromJson(response.data['data']);
+      return AtividadeLocalidade.fromJson(response.data);
     } catch (e) {
       throw 'Erro ao criar atividade: ${e.toString()}';
     }
   }
 
-  Future<AtividadeLocalidade> updateAtividade(
-      int id, AtividadeLocalidade atividade) async {
+  Future<void> updateAtividade(int id, AtividadeLocalidade atividade) async {
     try {
-      final response = await _dio.put('/atividadeLocalidades/$id', data: {
-        'data': {
-          'nome': atividade.nome,
-          'descricao': atividade.descricao,
-          'quantidadeMonitores': atividade.quantidadeMonitores,
-          'idLocalidade': atividade.idLocalidade,
-          'idProfessor': atividade.idProfessor,
-          'idFeira': atividade.idFeira,
-        }
+      await _dio.put('/atividadeLocalidades/$id', data: {
+        'nome': atividade.nome,
+        'descricao': atividade.descricao,
+        'quantidadeMonitores': atividade.quantidadeMonitores.toString(),
+        'idLocalidade': atividade.idLocalidade.toString(),
+        'idProfessor': atividade.idProfessor.toString(),
+        'idFeira': atividade.idFeira.toString(),
       });
-      return AtividadeLocalidade.fromJson(response.data['data']);
+      return;
     } catch (e) {
       throw 'Erro ao atualizar atividade: ${e.toString()}';
     }
@@ -103,7 +98,7 @@ class AtividadeSublocalidadeService {
   AtividadeSublocalidadeService([Dio? dio])
       : _dio = dio ??
             Dio(BaseOptions(
-              baseUrl: 'https://sua-api.com', // Defina a URL base da API
+              baseUrl: 'http://localhost:3000',
               headers: {
                 'Content-Type': 'application/json',
               },
@@ -129,7 +124,7 @@ class AtividadeSublocalidadeService {
   Future<List<AtividadeSublocalidade>> getAtividades() async {
     try {
       final response = await _dio.get('/atividadeSublocalidades');
-      final List<dynamic> data = response.data['data'];
+      final List<dynamic> data = response.data;
       return data.map((item) => AtividadeSublocalidade.fromJson(item)).toList();
     } catch (e) {
       throw 'Erro ao carregar atividades: ${e.toString()}';
@@ -139,7 +134,7 @@ class AtividadeSublocalidadeService {
   Future<AtividadeSublocalidade> getAtividade(int id) async {
     try {
       final response = await _dio.get('/atividadeSublocalidades/$id');
-      return AtividadeSublocalidade.fromJson(response.data['data']);
+      return AtividadeSublocalidade.fromJson(response.data);
     } catch (e) {
       throw 'Erro ao carregar atividade: ${e.toString()}';
     }
@@ -149,43 +144,38 @@ class AtividadeSublocalidadeService {
       AtividadeSublocalidade atividade) async {
     try {
       final response = await _dio.post('/atividadeSublocalidades/', data: {
-        'data': {
-          'nome': atividade.nome,
-          'descricao': atividade.descricao,
-          'quantidadeMonitores': atividade.quantidadeMonitores,
-          'duracaoSecao': atividade.duracaoSecao,
-          'capacidadeVisitantes': atividade.capacidadeVisitantes,
-          'idSublocalidade': atividade.idSublocalidade,
-          'idProfessor': atividade.idProfessor,
-          'idFeira': atividade.idFeira,
-          'status': atividade.status.descricao,
-          'tipo': atividade.status.descricao,
-        }
+        'nome': atividade.nome,
+        'descricao': atividade.descricao,
+        'quantidadeMonitores': atividade.quantidadeMonitores.toString(),
+        'duracao': atividade.duracaoSecao.toString(),
+        'capacidadeVisitante': atividade.capacidadeVisitantes.toString(),
+        'idSublocalidade': atividade.idSublocalidade.toString(),
+        'idProfessor': atividade.idProfessor.toString(),
+        'idFeira': atividade.idFeira.toString(),
+        'status': atividade.status.descricao,
+        'tipo': atividade.status.descricao,
       });
-      return AtividadeSublocalidade.fromJson(response.data['data']);
+      return AtividadeSublocalidade.fromJson(response.data);
     } catch (e) {
       throw 'Erro ao criar atividade: ${e.toString()}';
     }
   }
 
-  Future<AtividadeSublocalidade> updateAtividade(
-      int id, AtividadeSublocalidade atividade) async {
+  Future<void> updateAtividade(int id, AtividadeSublocalidade atividade) async {
     try {
-      final response = await _dio.put('/atividadeSublocalidades/$id', data: {
-        'data': {
-          'nome': atividade.nome,
-          'descricao': atividade.descricao,
-          'quantidadeMonitores': atividade.quantidadeMonitores,
-          'duracaoSecao': atividade.duracaoSecao,
-          'capacidadeVisitantes': atividade.capacidadeVisitantes,
-          'idSublocalidade': atividade.idSublocalidade,
-          'idProfessor': atividade.idProfessor,
-          'idFeira': atividade.idFeira,
-          'status': atividade.status.descricao,
-          'tipo': atividade.status.descricao,
-        }
+      await _dio.put('/atividadeSublocalidades/$id', data: {
+        'nome': atividade.nome,
+        'descricao': atividade.descricao,
+        'quantidadeMonitores': atividade.quantidadeMonitores.toString(),
+        'duracao': atividade.duracaoSecao.toString(),
+        'capacidadeVisitante': atividade.capacidadeVisitantes.toString(),
+        'idSublocalidade': atividade.idSublocalidade.toString(),
+        'idProfessor': atividade.idProfessor.toString(),
+        'idFeira': atividade.idFeira.toString(),
+        'status': atividade.status.descricao,
+        'tipo': atividade.status.descricao,
       });
-      return AtividadeSublocalidade.fromJson(response.data['data']);
+      return;
     } catch (e) {
       throw 'Erro ao atualizar atividade: ${e.toString()}';
     }

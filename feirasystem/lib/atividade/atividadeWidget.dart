@@ -164,13 +164,19 @@ class _AtividadesState extends State<Atividades> {
           atividadeLocalidade.quantidadeMonitores.toString();
       _controladorCapacidadeVisitantes.clear();
       _controladorDuracaoSecao.clear();
-      _localidadeSelecionada = await _localidadeService
-          .getLocalidade(atividadeLocalidade.idLocalidade);
+      _localidades.then((lista) {
+        _localidadeSelecionada = lista.firstWhere(
+            (localidade) => localidade.id == atividadeLocalidade.idLocalidade);
+      });
       _sublocalidadeSelecionada = null;
-      _professorSelecionado =
-          await _professorService.getProfessor(atividadeLocalidade.idProfessor);
-      _feiraSelecionada =
-          await _feiraService.getFeira(atividadeLocalidade.idFeira);
+      _professores.then((lista) {
+        _professorSelecionado = lista.firstWhere(
+            (professor) => professor.id == atividadeLocalidade.idProfessor);
+      });
+      _feiras.then((lista) {
+        _feiraSelecionada = lista
+            .firstWhere((feira) => feira.id == atividadeLocalidade.idFeira);
+      });
       _status = null;
       _tipo = null;
       _opcaoSelecionada = 'Localidade';
@@ -184,12 +190,18 @@ class _AtividadesState extends State<Atividades> {
       _controladorDuracaoSecao.text =
           atividadeSublocalidade.duracaoSecao.toString();
       _localidadeSelecionada = null;
-      _sublocalidadeSelecionada = await _sublocalidadeService
-          .getSublocalidade(atividadeSublocalidade.idSublocalidade);
-      _professorSelecionado = await _professorService
-          .getProfessor(atividadeSublocalidade.idProfessor);
-      _feiraSelecionada =
-          await _feiraService.getFeira(atividadeSublocalidade.idFeira);
+      _sublocalidades.then((lista) {
+        _sublocalidadeSelecionada = lista.firstWhere((sublocalidade) =>
+            sublocalidade.id == atividadeSublocalidade.idSublocalidade);
+      });
+      _professores.then((lista) {
+        _professorSelecionado = lista.firstWhere(
+            (professor) => professor.id == atividadeSublocalidade.idProfessor);
+      });
+      _feiras.then((lista) {
+        _feiraSelecionada = lista
+            .firstWhere((feira) => feira.id == atividadeSublocalidade.idFeira);
+      });
       _status = atividadeSublocalidade.status;
       _tipo = atividadeSublocalidade.tipo;
       _opcaoSelecionada = 'Sublocalidade';

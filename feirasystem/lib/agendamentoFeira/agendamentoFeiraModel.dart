@@ -44,20 +44,11 @@ class AgendamentoFeira {
   }
 
   factory AgendamentoFeira.fromJson(Map<String, dynamic> json) {
-    if (json['attributes'] != null) {
-      final attributes = json['attributes'];
-      return AgendamentoFeira(
-        id: json['id'],
-        data: DateTime.parse(attributes['data']),
-        turno: TurnoExtensao.fromString(attributes['turno']),
-        idFeira: attributes['idFeira'],
-      );
-    }
     return AgendamentoFeira(
       id: int.parse(json['id'].toString()),
       data: DateTime.parse(json['data']),
       turno: TurnoExtensao.fromString(json['turno']),
-      idFeira: json['idFeira'],
+      idFeira: int.parse(json['idFeira'].toString()),
     );
   }
 

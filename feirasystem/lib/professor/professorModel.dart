@@ -11,18 +11,10 @@ class Professor {
   }
 
   factory Professor.fromJson(Map<String, dynamic> json) {
-    if (json['attributes'] != null) {
-      final attributes = json['attributes'];
-      return Professor(
-        id: json['id'],
-        nome: attributes['nome'],
-        idDepartamento: attributes['idDepartamento'],
-      );
-    }
     return Professor(
       id: int.parse(json['id'].toString()),
       nome: json['nome'],
-      idDepartamento: int.parse(json['idDepartamento']),
+      idDepartamento: int.parse(json['idDepartamento'].toString()),
     );
   }
 
