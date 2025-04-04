@@ -125,6 +125,7 @@ class AtividadeSublocalidadeService {
     try {
       final response = await _dio.get('/atividadeSublocalidades');
       final List<dynamic> data = response.data;
+      print(data);
       return data.map((item) => AtividadeSublocalidade.fromJson(item)).toList();
     } catch (e) {
       throw 'Erro ao carregar atividades: ${e.toString()}';
@@ -153,7 +154,7 @@ class AtividadeSublocalidadeService {
         'idProfessor': atividade.idProfessor.toString(),
         'idFeira': atividade.idFeira.toString(),
         'status': atividade.status.descricao,
-        'tipo': atividade.status.descricao,
+        'tipo': atividade.tipo.descricao,
       });
       return AtividadeSublocalidade.fromJson(response.data);
     } catch (e) {
@@ -173,7 +174,7 @@ class AtividadeSublocalidadeService {
         'idProfessor': atividade.idProfessor.toString(),
         'idFeira': atividade.idFeira.toString(),
         'status': atividade.status.descricao,
-        'tipo': atividade.status.descricao,
+        'tipo': atividade.tipo.descricao,
       });
       return;
     } catch (e) {
