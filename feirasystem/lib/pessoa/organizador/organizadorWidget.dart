@@ -80,14 +80,10 @@ class _OrganizadoresState extends State<Organizadores> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _controladorEmail,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Email',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: Colors.yellow),
-                  ),
                 ),
-              ),              
+              ),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: (){

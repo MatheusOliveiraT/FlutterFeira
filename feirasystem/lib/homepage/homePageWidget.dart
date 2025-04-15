@@ -15,6 +15,15 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Feira de profissões'),
+        actionsPadding: const EdgeInsets.only(right: 16.0),
+        actions: [
+          IconButton(
+          onPressed: () {
+            Navigator.pushNamed(context, 'perfil');
+          }, 
+          icon: const Icon(Icons.person_pin)
+          )
+        ],
       ),
       body: Center(
         child: Column(
