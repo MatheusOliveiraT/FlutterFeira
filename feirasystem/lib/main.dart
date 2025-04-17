@@ -1,6 +1,6 @@
 import 'package:feirasystem/departamento/departamentoWidget.dart';
 import 'pessoa/monitor/perfilMonitorWidget.dart';
-import 'package:feirasystem/pessoa/organizador/perfilOrganizadorWidget.dart';
+// import 'package:feirasystem/pessoa/organizador/perfilOrganizadorWidget.dart';
 import 'package:feirasystem/pessoa/monitor/monitorWidget.dart';
 import 'package:feirasystem/pessoa/organizador/organizadorWidget.dart';
 import 'package:feirasystem/pessoa/pessoaWidget.dart';
