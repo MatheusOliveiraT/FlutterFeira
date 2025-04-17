@@ -125,7 +125,6 @@ class AtividadeSublocalidadeService {
     try {
       final response = await _dio.get('/atividadeSublocalidades');
       final List<dynamic> data = response.data;
-      print(data);
       return data.map((item) => AtividadeSublocalidade.fromJson(item)).toList();
     } catch (e) {
       throw 'Erro ao carregar atividades: ${e.toString()}';

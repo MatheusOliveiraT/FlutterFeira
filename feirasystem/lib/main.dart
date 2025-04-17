@@ -1,9 +1,6 @@
-<<<<<<< Updated upstream
 import 'package:feirasystem/departamento/departamentoWidget.dart';
-=======
 import 'pessoa/monitor/perfilMonitorWidget.dart';
 import 'package:feirasystem/pessoa/organizador/perfilOrganizadorWidget.dart';
->>>>>>> Stashed changes
 import 'package:feirasystem/pessoa/monitor/monitorWidget.dart';
 import 'package:feirasystem/pessoa/organizador/organizadorWidget.dart';
 import 'package:feirasystem/pessoa/pessoaWidget.dart';
@@ -119,7 +116,7 @@ class ExpoUT extends StatelessWidget {
         'usuario': (context) => const Pessoas(),
         'usuario/organizador': (context) => const Organizadores(),
         'usuario/monitor': (context) => const Monitores(),
-       // 'perfil': (context) => const PerfilOrganizadores(),
+        // 'perfil': (context) => const PerfilOrganizadores(),
         'perfil': (context) => const PerfilMonitores(),
       },
     );
