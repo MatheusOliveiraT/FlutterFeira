@@ -1,5 +1,6 @@
 import 'package:feirasystem/departamento/departamentoWidget.dart';
-import 'pessoa/monitor/perfilMonitorWidget.dart';
+import 'package:feirasystem/pessoa/loginWidget.dart';
+import 'package:feirasystem/pessoa/monitor/perfilMonitorWidget.dart';
 // import 'package:feirasystem/pessoa/organizador/perfilOrganizadorWidget.dart';
 import 'package:feirasystem/pessoa/monitor/monitorWidget.dart';
 import 'package:feirasystem/pessoa/organizador/organizadorWidget.dart';
@@ -114,6 +115,7 @@ class ExpoUT extends StatelessWidget {
         'cadastro/departamento': (context) => const Departamentos(),
         'cadastro/professor': (context) => const Professores(),
         'usuario': (context) => const Pessoas(),
+        'usuario/login': (context) => const Login(),
         'usuario/organizador': (context) => const Organizadores(),
         'usuario/monitor': (context) => const Monitores(),
         // 'perfil': (context) => const PerfilOrganizadores(),

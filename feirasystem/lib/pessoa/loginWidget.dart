@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:feirasystem/assets/formFields/passwordField.dart';
-import 'package:feirasystem/assets/formFields/phoneField.dart';
 
-class Organizadores extends StatefulWidget {
-  const Organizadores({super.key});
+class Login extends StatefulWidget {
+  const Login({super.key});
   @override
-  _OrganizadoresState createState() => _OrganizadoresState();
+  _LoginState createState() => _LoginState();
 }
 
-class _OrganizadoresState extends State<Organizadores> {
+class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _controladorNome = TextEditingController();
-  final TextEditingController _controladorCelular = TextEditingController();
   final TextEditingController _controladorEmail = TextEditingController();
   final TextEditingController _controladorSenha = TextEditingController();
-  final TextEditingController _controladorCSenha = TextEditingController();
 
   void _mostrarSnackBar(String message, int tempo) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -26,18 +22,11 @@ class _OrganizadoresState extends State<Organizadores> {
   }
 
   bool _validarForm() {
-    String nome = _controladorNome.text.trim();
-    String celular = _controladorCelular.text.trim();
     String email = _controladorEmail.text.trim();
     String senha = _controladorSenha.text.trim();
-    String csenha = _controladorCSenha.text.trim();
 
-    if (nome.isEmpty ||
-        celular.isEmpty ||
-        email.isEmpty ||
-        senha.isEmpty ||
-        csenha.isEmpty) {
-      _mostrarSnackBar('Preencha todos os campos obrigatórios!', 1);
+    if (email.isEmpty || senha.isEmpty) {
+      _mostrarSnackBar('Forneça todos os dados para entrar no sistema.', 2);
       return false;
     }
     final emailRegex =
@@ -46,21 +35,13 @@ class _OrganizadoresState extends State<Organizadores> {
       _mostrarSnackBar('E-mail inválido.', 1);
       return false;
     }
-    if (senha != csenha) {
-      _mostrarSnackBar('Senhas digitadas não correspondem!', 1);
-      return false;
-    }
-    if (senha.length < 8) {
-      _mostrarSnackBar(
-          'Senha muito curta! Sua senha deve ter pelo menos 8 dígitos.', 2);
-      return false;
-    }
     return true;
   }
 
-  bool _cadastroSucesso() {
+  bool _loginSucesso() {
     if (_validarForm()) {
-      _mostrarSnackBar('Cadastrado com sucesso!', 2);
+      _mostrarSnackBar('Autenticado com sucesso!', 2);
+      Navigator.pushNamed(context, 'usuario');
       return true;
     }
     return false;
@@ -70,7 +51,7 @@ class _OrganizadoresState extends State<Organizadores> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cadastre-se'),
+        title: const Text('Feira de Profissões'),
       ),
       backgroundColor: const Color.fromARGB(255, 236, 239, 243),
       body: Center(
@@ -95,30 +76,8 @@ class _OrganizadoresState extends State<Organizadores> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   const Text(
-                    'Cadastre-se como organizador',
+                    'Entre no sistema da Feira de Profissões',
                     style: TextStyle(fontSize: 18),
-                  ),
-                  const SizedBox(height: 16),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: 400,
-                      minWidth: 200,
-                    ),
-                    child: TextFormField(
-                      autofocus: true,
-                      controller: _controladorNome,
-                      decoration: const InputDecoration(
-                        labelText: 'Nome',
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: 400,
-                      minWidth: 200,
-                    ),
-                    child: PhoneField(controller: _controladorCelular),
                   ),
                   const SizedBox(height: 16),
                   ConstrainedBox(
@@ -145,23 +104,12 @@ class _OrganizadoresState extends State<Organizadores> {
                       label: 'Senha',
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: 400,
-                      minWidth: 200,
-                    ),
-                    child: PasswordField(
-                      controller: _controladorCSenha,
-                      label: 'Confirme sua senha',
-                    ),
-                  ),
                   const SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: () {
-                      _cadastroSucesso();
+                      _loginSucesso();
                     },
-                    child: const Text('Cadastrar'),
+                    child: const Text('Entrar'),
                   )
                 ],
               ),

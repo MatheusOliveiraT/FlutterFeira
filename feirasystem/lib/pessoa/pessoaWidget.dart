@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class Pessoas extends StatelessWidget{
+class Pessoas extends StatelessWidget {
   const Pessoas({super.key});
   @override
   Widget build(BuildContext context) {
@@ -9,24 +9,31 @@ class Pessoas extends StatelessWidget{
         title: const Text('Cadastro de Usuário'),
       ),
       body: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, 'usuario/organizador');
-              },
-               child: const Text('Organizador'),
-               ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, 'usuario/monitor');
-              },
-              child: const Text('Monitor'),
-              )
-          ],
-        )
-      ),
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(context, 'usuario/organizador');
+            },
+            child: const Text('Organizador'),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(context, 'usuario/monitor');
+            },
+            child: const Text('Monitor'),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(context, 'usuario/login');
+            },
+            child: const Text('Entrar'),
+          )
+        ],
+      )),
     );
   }
 }

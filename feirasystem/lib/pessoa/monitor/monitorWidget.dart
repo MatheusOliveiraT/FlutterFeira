@@ -1,64 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
-
-class PasswordField extends StatefulWidget {
-  final TextEditingController controller;
-  final String label;
-
-  const PasswordField(
-      {super.key, required this.controller, required this.label});
-
-  @override
-  _PasswordFieldState createState() => _PasswordFieldState();
-}
-
-class _PasswordFieldState extends State<PasswordField> {
-  bool _obscureText = true;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: widget.controller,
-      obscureText: _obscureText,
-      decoration: InputDecoration(
-        labelText: widget.label,
-        suffixIcon: IconButton(
-          icon: Icon(
-            _obscureText ? Icons.visibility_off : Icons.visibility,
-          ),
-          onPressed: () {
-            setState(() {
-              _obscureText = !_obscureText;
-            });
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class PhoneField extends StatelessWidget {
-  final TextEditingController controller;
-
-  const PhoneField({super.key, required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: TextInputType.phone,
-      inputFormatters: [
-        PhoneInputFormatter(
-          defaultCountryCode: 'BR',
-          allowEndlessPhone: false,
-        ),
-      ],
-      decoration: const InputDecoration(
-        labelText: 'Celular',
-      ),
-    );
-  }
-}
+import 'package:feirasystem/assets/formFields/passwordField.dart';
+import 'package:feirasystem/assets/formFields/phoneField.dart';
 
 class Monitores extends StatefulWidget {
   const Monitores({super.key});
