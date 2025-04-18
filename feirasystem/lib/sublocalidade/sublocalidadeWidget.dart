@@ -1,3 +1,4 @@
+import 'package:feirasystem/assets/bottomAppBarOrganizador.dart';
 import 'package:feirasystem/localidade/localidadeModel.dart';
 import 'package:feirasystem/localidade/localidadeService.dart';
 import 'package:feirasystem/sublocalidade/sublocalidadeModel.dart';
@@ -270,6 +271,7 @@ class _SublocalidadesState extends State<Sublocalidades> {
         onPressed: () => _mostrarFormSublocalidade(),
         child: const Icon(Icons.add),
       ),
+      bottomNavigationBar: const BottomAppBarOrganizador(),
     );
   }
 }

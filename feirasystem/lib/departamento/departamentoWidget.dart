@@ -1,3 +1,4 @@
+import 'package:feirasystem/assets/bottomAppBarOrganizador.dart';
 import 'package:flutter/material.dart';
 import 'package:feirasystem/departamento/departamentoModel.dart';
 import 'package:feirasystem/departamento/departamentoService.dart';
@@ -196,6 +197,7 @@ class _DepartamentosState extends State<Departamentos> {
         onPressed: () => _mostrarFormDepartamento(),
         child: const Icon(Icons.add),
       ),
+      bottomNavigationBar: const BottomAppBarOrganizador(),
     );
   }
 }

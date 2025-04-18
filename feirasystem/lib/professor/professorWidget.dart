@@ -1,3 +1,4 @@
+import 'package:feirasystem/assets/bottomAppBarOrganizador.dart';
 import 'package:feirasystem/professor/professorModel.dart';
 import 'package:feirasystem/professor/professorService.dart';
 import 'package:feirasystem/departamento/departamentoModel.dart';
@@ -242,6 +243,7 @@ class _ProfessoresState extends State<Professores> {
         onPressed: () => _mostrarFormProfessor(),
         child: const Icon(Icons.add),
       ),
+      bottomNavigationBar: const BottomAppBarOrganizador(),
     );
   }
 }

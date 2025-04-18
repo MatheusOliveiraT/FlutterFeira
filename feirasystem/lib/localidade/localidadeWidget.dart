@@ -1,3 +1,4 @@
+import 'package:feirasystem/assets/bottomAppBarOrganizador.dart';
 import 'package:feirasystem/localidade/localidadeService.dart';
 import 'package:feirasystem/localidade/localidadeModel.dart';
 import 'package:flutter/material.dart';
@@ -225,6 +226,7 @@ class _LocalidadesState extends State<Localidades> {
         onPressed: () => _mostrarFormLocalidade(),
         child: const Icon(Icons.add),
       ),
+      bottomNavigationBar: const BottomAppBarOrganizador(),
     );
   }
 }

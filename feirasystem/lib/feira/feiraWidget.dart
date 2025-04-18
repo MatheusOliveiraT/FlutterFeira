@@ -1,3 +1,4 @@
+import 'package:feirasystem/assets/bottomAppBarOrganizador.dart';
 import 'package:feirasystem/feira/feiraService.dart';
 import 'package:flutter/material.dart';
 import 'feiraModel.dart';
@@ -190,6 +191,7 @@ class _FeirasState extends State<Feiras> {
         onPressed: () => _mostrarFormFeira(),
         child: const Icon(Icons.add),
       ),
+      bottomNavigationBar: const BottomAppBarOrganizador(),
     );
   }
 }

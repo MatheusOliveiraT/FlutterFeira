@@ -1,3 +1,4 @@
+import 'package:feirasystem/assets/bottomAppBarOrganizador.dart';
 import 'package:flutter/material.dart';
 
 class Cadastro extends StatelessWidget {
@@ -7,7 +8,7 @@ class Cadastro extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cadastro'),
+        title: const Text('Cadastros'),
       ),
       body: Center(
         child: Column(
@@ -64,6 +65,7 @@ class Cadastro extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: const BottomAppBarOrganizador(),
     );
   }
 }

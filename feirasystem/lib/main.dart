@@ -1,7 +1,7 @@
 import 'package:feirasystem/departamento/departamentoWidget.dart';
 import 'package:feirasystem/pessoa/loginWidget.dart';
 import 'package:feirasystem/pessoa/monitor/perfilMonitorWidget.dart';
-// import 'package:feirasystem/pessoa/organizador/perfilOrganizadorWidget.dart';
+import 'package:feirasystem/pessoa/organizador/perfilOrganizadorWidget.dart';
 import 'package:feirasystem/pessoa/monitor/monitorWidget.dart';
 import 'package:feirasystem/pessoa/organizador/organizadorWidget.dart';
 import 'package:feirasystem/pessoa/pessoaWidget.dart';
@@ -38,6 +38,17 @@ class ExpoUT extends StatelessWidget {
           backgroundColor: Color.fromARGB(255, 254, 204, 23),
           centerTitle: true,
           titleTextStyle: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        bottomAppBarTheme: const BottomAppBarTheme(
+          elevation: 4.0,
+          shadowColor: Color.fromARGB(255, 0, 0, 0),
+          color: Color.fromARGB(255, 254, 204, 23),
+        ),
+        iconTheme: const IconThemeData(
+          color: Color.fromARGB(255, 25, 42, 50),
+        ),
+        cardTheme: const CardTheme(
+          color: Color.fromARGB(255, 255, 245, 218),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
@@ -103,24 +114,83 @@ class ExpoUT extends StatelessWidget {
       supportedLocales: const [
         Locale('pt', 'BR'),
       ],
+      onGenerateRoute: gerarRotaComAnimacao,
       initialRoute: '',
-      routes: {
-        '': (context) => const HomePage(),
-        'cadastro': (context) => const Cadastro(),
-        'cadastro/localidade': (context) => const Localidades(),
-        'cadastro/sublocalidade': (context) => const Sublocalidades(),
-        'cadastro/atividade': (context) => const Atividades(),
-        'cadastro/feira': (context) => const Feiras(),
-        'cadastro/agendamentofeira': (context) => const AgendamentosFeira(),
-        'cadastro/departamento': (context) => const Departamentos(),
-        'cadastro/professor': (context) => const Professores(),
-        'usuario': (context) => const Pessoas(),
-        'usuario/login': (context) => const Login(),
-        'usuario/organizador': (context) => const Organizadores(),
-        'usuario/monitor': (context) => const Monitores(),
-        // 'perfil': (context) => const PerfilOrganizadores(),
-        'perfil': (context) => const PerfilMonitores(),
-      },
     );
   }
+}
+
+Route<dynamic> gerarRotaComAnimacao(RouteSettings settings) {
+  late final Widget pagina;
+
+  switch (settings.name) {
+    case '':
+      pagina = const HomePage();
+      break;
+    case 'cadastro':
+      pagina = const Cadastro();
+      break;
+    case 'cadastro/localidade':
+      pagina = const Localidades();
+      break;
+    case 'cadastro/sublocalidade':
+      pagina = const Sublocalidades();
+      break;
+    case 'cadastro/atividade':
+      pagina = const Atividades();
+      break;
+    case 'cadastro/feira':
+      pagina = const Feiras();
+      break;
+    case 'cadastro/agendamentofeira':
+      pagina = const AgendamentosFeira();
+      break;
+    case 'cadastro/departamento':
+      pagina = const Departamentos();
+      break;
+    case 'cadastro/professor':
+      pagina = const Professores();
+      break;
+    case 'usuario':
+      pagina = const Pessoas();
+      break;
+    case 'usuario/login':
+      pagina = const Login();
+      break;
+    case 'usuario/organizador':
+      pagina = const Organizadores();
+      break;
+    case 'usuario/monitor':
+      pagina = const Monitores();
+      break;
+    case 'usuario/perfil/organizador':
+      pagina = const PerfilOrganizadores();
+      break;
+    case 'usuario/perfil/monitor':
+      pagina = const PerfilMonitores();
+      break;
+  }
+
+  return PageRouteBuilder(
+    settings: settings,
+    transitionDuration: const Duration(milliseconds: 300),
+    pageBuilder: (_, __, ___) => pagina,
+    transitionsBuilder: (_, animation, __, child) {
+      final curvedAnimation = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOut,
+      );
+      final scaleAnimation =
+          Tween<double>(begin: 0.9, end: 1.0).animate(curvedAnimation);
+      final fadeAnimation =
+          Tween<double>(begin: 0.0, end: 1.0).animate(curvedAnimation);
+      return FadeTransition(
+        opacity: fadeAnimation,
+        child: ScaleTransition(
+          scale: scaleAnimation,
+          child: child,
+        ),
+      );
+    },
+  );
 }

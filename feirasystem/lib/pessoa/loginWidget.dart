@@ -1,3 +1,4 @@
+import 'package:feirasystem/assets/customSnackBar.dart';
 import 'package:flutter/material.dart';
 import 'package:feirasystem/assets/formFields/passwordField.dart';
 
@@ -12,27 +13,20 @@ class _LoginState extends State<Login> {
   final TextEditingController _controladorEmail = TextEditingController();
   final TextEditingController _controladorSenha = TextEditingController();
 
-  void _mostrarSnackBar(String message, int tempo) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: Duration(seconds: tempo),
-      ),
-    );
-  }
-
   bool _validarForm() {
     String email = _controladorEmail.text.trim();
     String senha = _controladorSenha.text.trim();
 
     if (email.isEmpty || senha.isEmpty) {
-      _mostrarSnackBar('Forneça todos os dados para entrar no sistema.', 2);
+      showCustomSnackBar(
+          context, 'Forneça todos os dados para entrar no sistema.',
+          tipo: 'erro');
       return false;
     }
     final emailRegex =
         RegExp(r'^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
     if (!emailRegex.hasMatch(email)) {
-      _mostrarSnackBar('E-mail inválido.', 1);
+      showCustomSnackBar(context, 'E-mail inválido.', tipo: 'erro');
       return false;
     }
     return true;
@@ -40,8 +34,8 @@ class _LoginState extends State<Login> {
 
   bool _loginSucesso() {
     if (_validarForm()) {
-      _mostrarSnackBar('Autenticado com sucesso!', 2);
-      Navigator.pushNamed(context, 'usuario');
+      showCustomSnackBar(context, 'Autenticado com sucesso!', tipo: 'sucesso');
+      Navigator.pushNamed(context, '');
       return true;
     }
     return false;
@@ -64,7 +58,7 @@ class _LoginState extends State<Login> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),

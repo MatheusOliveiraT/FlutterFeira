@@ -1,3 +1,4 @@
+import 'package:feirasystem/assets/bottomAppBarOrganizador.dart';
 import 'package:feirasystem/atividade/atividadeModel.dart';
 import 'package:feirasystem/atividade/atividadeService.dart';
 import 'package:feirasystem/feira/feiraModel.dart';
@@ -604,6 +605,7 @@ class _AtividadesState extends State<Atividades> {
         onPressed: () => _mostrarFormAtividades(),
         child: const Icon(Icons.add),
       ),
+      bottomNavigationBar: const BottomAppBarOrganizador(),
     );
   }
 

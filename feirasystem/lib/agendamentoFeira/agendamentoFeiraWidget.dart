@@ -1,5 +1,6 @@
 import 'package:feirasystem/agendamentoFeira/agendamentoFeiraModel.dart';
 import 'package:feirasystem/agendamentoFeira/agendamentoFeiraService.dart';
+import 'package:feirasystem/assets/bottomAppBarOrganizador.dart';
 import 'package:feirasystem/feira/feiraModel.dart';
 import 'package:feirasystem/feira/feiraService.dart';
 import 'package:flutter/material.dart';
@@ -336,6 +337,7 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
         onPressed: () => _mostrarFormAgendamentoFeira(),
         child: const Icon(Icons.add),
       ),
+      bottomNavigationBar: const BottomAppBarOrganizador(),
     );
   }
 }
