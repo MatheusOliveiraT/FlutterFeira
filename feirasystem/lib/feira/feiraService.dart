@@ -36,8 +36,12 @@ class FeiraService {
       final response = await _dio.get('/feiras');
       final List<dynamic> data = response.data;
       return data.map((item) => Feira.fromJson(item)).toList();
-    } catch (e) {
-      throw 'Erro ao carregar feiras: ${e.toString()}';
+    } on DioException catch (e) {
+      if (e.response?.data['mensagem'] != null) {
+        throw '${e.response?.data['mensagem']}';
+      } else {
+        throw e.toString();
+      }
     }
   }
 
@@ -45,8 +49,12 @@ class FeiraService {
     try {
       final response = await _dio.get('/feiras/$id');
       return Feira.fromJson(response.data);
-    } catch (e) {
-      throw 'Erro ao carregar feira: ${e.toString()}';
+    } on DioException catch (e) {
+      if (e.response?.data['mensagem'] != null) {
+        throw '${e.response?.data['mensagem']}';
+      } else {
+        throw e.toString();
+      }
     }
   }
 
@@ -56,8 +64,12 @@ class FeiraService {
         'nome': feira.nome,
       });
       return Feira.fromJson(response.data);
-    } catch (e) {
-      throw 'Erro ao criar feira: ${e.toString()}';
+    } on DioException catch (e) {
+      if (e.response?.data['mensagem'] != null) {
+        throw '${e.response?.data['mensagem']}';
+      } else {
+        throw e.toString();
+      }
     }
   }
 
@@ -67,16 +79,24 @@ class FeiraService {
         'nome': feira.nome,
       });
       return;
-    } catch (e) {
-      throw 'Erro ao atualizar feira: ${e.toString()}';
+    } on DioException catch (e) {
+      if (e.response?.data['mensagem'] != null) {
+        throw '${e.response?.data['mensagem']}';
+      } else {
+        throw e.toString();
+      }
     }
   }
 
   Future<void> deleteFeira(int id) async {
     try {
       await _dio.delete('/feiras/$id');
-    } catch (e) {
-      throw 'Erro ao deletar feira: ${e.toString()}';
+    } on DioException catch (e) {
+      if (e.response?.data['mensagem'] != null) {
+        throw '${e.response?.data['mensagem']}';
+      } else {
+        throw e.toString();
+      }
     }
   }
 }

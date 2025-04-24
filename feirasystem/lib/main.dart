@@ -86,6 +86,14 @@ class ExpoUT extends StatelessWidget {
                 color: Color.fromARGB(255, 50, 136, 242), width: 2.0),
             borderRadius: BorderRadius.circular(15.0),
           ),
+          errorStyle: const TextStyle(
+            height: 0,
+            fontSize: 0,
+          ),
+          errorBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.red),
+            borderRadius: BorderRadius.circular(15.0),
+          ),
         ),
         dropdownMenuTheme: const DropdownMenuThemeData(
           textStyle: TextStyle(

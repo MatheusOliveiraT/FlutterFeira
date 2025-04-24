@@ -1,4 +1,5 @@
 import 'package:feirasystem/assets/bottomAppBarOrganizador.dart';
+import 'package:feirasystem/assets/customSnackBar.dart';
 import 'package:feirasystem/feira/feiraService.dart';
 import 'package:flutter/material.dart';
 import 'feiraModel.dart';
@@ -30,11 +31,8 @@ class _FeirasState extends State<Feiras> {
   bool _validarForm() {
     String nome = _controladorNome.text.trim();
     if (nome.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Preencha todos os campos obrigatórios!'),
-            duration: Duration(seconds: 1)),
-      );
+      showCustomSnackBar(context, 'Preencha todos os campos obrigatórios!',
+          tipo: 'erro', duracao: 1);
       return false;
     }
     return true;
@@ -84,10 +82,11 @@ class _FeirasState extends State<Feiras> {
                   }
                   Navigator.pop(context);
                   _atualizarFeiras();
-                  _mostrarSnackBar(
-                      '${feira == null ? 'Feira criada' : '${feira.nome} atualizado(a)'} com sucesso!');
+                  showCustomSnackBar(context,
+                      '${feira == null ? 'Feira criada' : '${feira.nome} atualizado(a)'} com sucesso!',
+                      tipo: 'sucesso');
                 } catch (e) {
-                  _mostrarSnackBar(e.toString());
+                  showCustomSnackBar(context, e.toString(), tipo: 'erro');
                 }
               }
             },
@@ -117,20 +116,18 @@ class _FeirasState extends State<Feiras> {
         ],
       ),
     );
-    if (confirm == true) {
-      await _feiraService.deleteFeira(feira.id!);
+    if (confirm == false) {
       _atualizarFeiras();
-      _mostrarSnackBar('Feira excluída com sucesso.');
     }
-  }
-
-  void _mostrarSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    if (confirm == true) {
+      try {
+        await _feiraService.deleteFeira(feira.id!);
+        _atualizarFeiras();
+        showCustomSnackBar(context, 'Feira excluída com sucesso.');
+      } catch (e) {
+        showCustomSnackBar(context, e.toString(), tipo: 'erro');
+      }
+    }
   }
 
   @override
@@ -148,6 +145,9 @@ class _FeirasState extends State<Feiras> {
               return const Center(child: CircularProgressIndicator());
             }
             if (snapshot.hasError) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                showCustomSnackBar(context, '${snapshot.error}', tipo: 'erro');
+              });
               return Center(child: Text('Error: ${snapshot.error}'));
             }
             final feiras = snapshot.data!;
@@ -168,8 +168,7 @@ class _FeirasState extends State<Feiras> {
                     child: ListTile(
                       title: Text(feira.nome),
                       trailing: Row(
-                        mainAxisSize: MainAxisSize
-                            .min, // Makes the Row take minimum space
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
                             icon: const Icon(Icons.edit),

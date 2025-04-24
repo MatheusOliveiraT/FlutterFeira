@@ -34,7 +34,8 @@ class _LoginState extends State<Login> {
 
   bool _loginSucesso() {
     if (_validarForm()) {
-      showCustomSnackBar(context, 'Autenticado com sucesso!', tipo: 'sucesso');
+      showCustomSnackBar(context, 'Autenticado com sucesso!',
+          tipo: 'sucesso', duracao: 1);
       Navigator.pushNamed(context, '');
       return true;
     }

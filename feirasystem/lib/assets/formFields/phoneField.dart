@@ -20,6 +20,12 @@ class PhoneField extends StatelessWidget {
       decoration: const InputDecoration(
         labelText: 'Celular',
       ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return '';
+        }
+        return null;
+      },
     );
   }
 }

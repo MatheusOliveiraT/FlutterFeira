@@ -1,3 +1,4 @@
+import 'package:feirasystem/assets/customSnackBar.dart';
 import 'package:flutter/material.dart';
 import 'package:feirasystem/assets/formFields/passwordField.dart';
 import 'package:feirasystem/assets/formFields/phoneField.dart';
@@ -17,15 +18,6 @@ class _MonitoresState extends State<Monitores> {
   final TextEditingController _controladorSenha = TextEditingController();
   final TextEditingController _controladorCSenha = TextEditingController();
 
-  void _mostrarSnackBar(String message, int tempo) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: Duration(seconds: tempo),
-      ),
-    );
-  }
-
   bool _validarForm() {
     String nome = _controladorNome.text.trim();
     String celular = _controladorCelular.text.trim();
@@ -40,30 +32,35 @@ class _MonitoresState extends State<Monitores> {
         ra.isEmpty ||
         senha.isEmpty ||
         csenha.isEmpty) {
-      _mostrarSnackBar('Preencha todos os campos obrigatórios!', 1);
+      showCustomSnackBar(context, 'Preencha todos os campos obrigatórios!',
+          tipo: 'erro', duracao: 1);
       return false;
     }
     final emailRegex =
         RegExp(r'^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
     if (!emailRegex.hasMatch(email)) {
-      _mostrarSnackBar('E-mail inválido.', 1);
+      showCustomSnackBar(context, 'E-mail inválido.', tipo: 'erro', duracao: 1);
       return false;
     }
     if (senha != csenha) {
-      _mostrarSnackBar('Senhas digitadas não correspondem!', 1);
+      showCustomSnackBar(context, 'Senhas digitadas não correspondem!',
+          tipo: 'erro', duracao: 1);
       return false;
     }
     if (senha.length < 8) {
-      _mostrarSnackBar(
-          'Senha muito curta! Sua senha deve ter pelo menos 8 dígitos.', 2);
+      showCustomSnackBar(context,
+          'Senha muito curta! Sua senha deve ter pelo menos 8 dígitos.',
+          tipo: 'erro', duracao: 2);
       return false;
     }
     return true;
   }
 
-  bool _cadastroSucesso() {
+  bool _cadastrar() {
     if (_validarForm()) {
-      _mostrarSnackBar('Cadastrado com sucesso!', 2);
+      showCustomSnackBar(context, 'Cadastrado com sucesso!',
+          tipo: 'sucesso', duracao: 2);
+      Navigator.pushNamed(context, '');
       return true;
     }
     return false;
@@ -113,6 +110,12 @@ class _MonitoresState extends State<Monitores> {
                       decoration: const InputDecoration(
                         labelText: 'Nome',
                       ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return '';
+                        }
+                        return null;
+                      },
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -127,6 +130,12 @@ class _MonitoresState extends State<Monitores> {
                         labelText: 'Registro Acadêmico (RA)',
                       ),
                       keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return '';
+                        }
+                        return null;
+                      },
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -149,6 +158,12 @@ class _MonitoresState extends State<Monitores> {
                         labelText: 'Email',
                       ),
                       keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return '';
+                        }
+                        return null;
+                      },
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -176,7 +191,8 @@ class _MonitoresState extends State<Monitores> {
                   const SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: () {
-                      _cadastroSucesso();
+                      _formKey.currentState!.validate();
+                      _cadastrar();
                     },
                     child: const Text('Cadastrar'),
                   )

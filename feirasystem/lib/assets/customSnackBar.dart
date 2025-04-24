@@ -96,7 +96,7 @@ class _AnimatedSnackBarWidgetState extends State<_AnimatedSnackBarWidget>
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      bottom: 90,
+      bottom: 100,
       left: 24,
       right: 24,
       child: Material(

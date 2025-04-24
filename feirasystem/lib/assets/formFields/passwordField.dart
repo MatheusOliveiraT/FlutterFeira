@@ -32,6 +32,12 @@ class _PasswordFieldState extends State<PasswordField> {
           },
         ),
       ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return '';
+        }
+        return null;
+      },
     );
   }
 }
