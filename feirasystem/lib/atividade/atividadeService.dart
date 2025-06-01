@@ -2,10 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:feirasystem/atividade/atividadeModel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AtividadeLocalidadeService {
+class AtividadeService {
   final Dio _dio;
 
-  AtividadeLocalidadeService([Dio? dio])
+  AtividadeService([Dio? dio])
       : _dio = dio ??
             Dio(BaseOptions(
               baseUrl: 'http://localhost:3000',
@@ -31,52 +31,86 @@ class AtividadeLocalidadeService {
     ));
   }
 
-  Future<List<AtividadeLocalidade>> getAtividades() async {
+  Future<List<Atividade>> getAtividades() async {
     try {
-      final response = await _dio.get('/atividadeLocalidades');
+      final response = await _dio.get('/atividades');
       final List<dynamic> data = response.data;
-      return data.map((item) => AtividadeLocalidade.fromJson(item)).toList();
+      return data.map((item) => Atividade.fromJson(item)).toList();
     } catch (e) {
       throw 'Erro ao carregar atividades: ${e.toString()}';
     }
   }
 
-  Future<AtividadeLocalidade> getAtividade(int id) async {
+  Future<Atividade> getAtividade(int id) async {
     try {
-      final response = await _dio.get('/atividadeLocalidades/$id');
-      return AtividadeLocalidade.fromJson(response.data);
+      final response = await _dio.get('/atividades/$id');
+      return Atividade.fromJson(response.data);
     } catch (e) {
       throw 'Erro ao carregar atividade: ${e.toString()}';
     }
   }
 
-  Future<AtividadeLocalidade> createAtividade(
-      AtividadeLocalidade atividade) async {
+  Future<Atividade> createAtividade(Atividade atividade) async {
     try {
-      final response = await _dio.post('/atividadeLocalidades/', data: {
-        'nome': atividade.nome,
-        'descricao': atividade.descricao,
-        'quantidadeMonitores': atividade.quantidadeMonitores.toString(),
-        'idLocalidade': atividade.idLocalidade.toString(),
-        'idProfessor': atividade.idProfessor.toString(),
-        'idFeira': atividade.idFeira.toString(),
-      });
-      return AtividadeLocalidade.fromJson(response.data);
+      if (atividade.tipoAtividade == TipoAtividade.LOCALIDADE) {
+        final response = await _dio.post('/atividades/', data: {
+          'nome': atividade.nome,
+          'descricao': atividade.descricao,
+          'quantidadeMonitores': atividade.quantidadeMonitores.toString(),
+          'idProfessor': atividade.idProfessor.toString(),
+          'idFeira': atividade.idFeira.toString(),
+          'idLocalidade': atividade.idLocalidade.toString(),
+          'tipoAtividade': atividade.tipoAtividade.descricao,
+        });
+        return Atividade.fromJson(response.data);
+      } else {
+        final response = await _dio.post('/atividades/', data: {
+          'nome': atividade.nome,
+          'descricao': atividade.descricao,
+          'quantidadeMonitores': atividade.quantidadeMonitores.toString(),
+          'tipoAtividade': atividade.tipoAtividade.descricao,
+          'idProfessor': atividade.idProfessor.toString(),
+          'idFeira': atividade.idFeira.toString(),
+          'idSublocalidade': atividade.idSublocalidade.toString(),
+          'tipo': atividade.tipo!.descricao,
+          'status': atividade.status!.descricao,
+          'capacidadeVisitantes': atividade.capacidadeVisitantes.toString(),
+          'duracaoSecao': atividade.duracaoSecao.toString(),
+        });
+        return Atividade.fromJson(response.data);
+      }
     } catch (e) {
       throw 'Erro ao criar atividade: ${e.toString()}';
     }
   }
 
-  Future<void> updateAtividade(int id, AtividadeLocalidade atividade) async {
+  Future<void> updateAtividade(int id, Atividade atividade) async {
     try {
-      await _dio.put('/atividadeLocalidades/$id', data: {
-        'nome': atividade.nome,
-        'descricao': atividade.descricao,
-        'quantidadeMonitores': atividade.quantidadeMonitores.toString(),
-        'idLocalidade': atividade.idLocalidade.toString(),
-        'idProfessor': atividade.idProfessor.toString(),
-        'idFeira': atividade.idFeira.toString(),
-      });
+      if (atividade.tipoAtividade == TipoAtividade.LOCALIDADE) {
+        await _dio.put('/atividades/$id', data: {
+          'nome': atividade.nome,
+          'descricao': atividade.descricao,
+          'quantidadeMonitores': atividade.quantidadeMonitores.toString(),
+          'idProfessor': atividade.idProfessor.toString(),
+          'idFeira': atividade.idFeira.toString(),
+          'idLocalidade': atividade.idLocalidade.toString(),
+          'tipoAtividade': atividade.tipoAtividade.descricao,
+        });
+      } else {
+        await _dio.put('/atividades/$id', data: {
+          'nome': atividade.nome,
+          'descricao': atividade.descricao,
+          'quantidadeMonitores': atividade.quantidadeMonitores.toString(),
+          'tipoAtividade': atividade.tipoAtividade.descricao,
+          'idProfessor': atividade.idProfessor.toString(),
+          'idFeira': atividade.idFeira.toString(),
+          'idSublocalidade': atividade.idSublocalidade.toString(),
+          'tipo': atividade.tipo!.descricao,
+          'status': atividade.status!.descricao,
+          'capacidadeVisitantes': atividade.capacidadeVisitantes.toString(),
+          'duracaoSecao': atividade.duracaoSecao.toString(),
+        });
+      }
       return;
     } catch (e) {
       throw 'Erro ao atualizar atividade: ${e.toString()}';
@@ -85,105 +119,7 @@ class AtividadeLocalidadeService {
 
   Future<void> deleteAtividade(int id) async {
     try {
-      await _dio.delete('/atividadeLocalidades/$id');
-    } catch (e) {
-      throw 'Erro ao deletar atividade: ${e.toString()}';
-    }
-  }
-}
-
-class AtividadeSublocalidadeService {
-  final Dio _dio;
-
-  AtividadeSublocalidadeService([Dio? dio])
-      : _dio = dio ??
-            Dio(BaseOptions(
-              baseUrl: 'http://localhost:3000',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            )) {
-    _dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        final prefs = await SharedPreferences.getInstance();
-        String? token = prefs.getString('auth_token');
-        if (token != null) {
-          options.headers['Authorization'] = 'Bearer $token';
-        }
-        return handler.next(options);
-      },
-      onError: (DioException e, handler) {
-        if (e.response?.statusCode == 401) {
-          // TO DO: INVALID/EXPIRED TOKEN
-        }
-        return handler.next(e);
-      },
-    ));
-  }
-
-  Future<List<AtividadeSublocalidade>> getAtividades() async {
-    try {
-      final response = await _dio.get('/atividadeSublocalidades');
-      final List<dynamic> data = response.data;
-      return data.map((item) => AtividadeSublocalidade.fromJson(item)).toList();
-    } catch (e) {
-      throw 'Erro ao carregar atividades: ${e.toString()}';
-    }
-  }
-
-  Future<AtividadeSublocalidade> getAtividade(int id) async {
-    try {
-      final response = await _dio.get('/atividadeSublocalidades/$id');
-      return AtividadeSublocalidade.fromJson(response.data);
-    } catch (e) {
-      throw 'Erro ao carregar atividade: ${e.toString()}';
-    }
-  }
-
-  Future<AtividadeSublocalidade> createAtividade(
-      AtividadeSublocalidade atividade) async {
-    try {
-      final response = await _dio.post('/atividadeSublocalidades/', data: {
-        'nome': atividade.nome,
-        'descricao': atividade.descricao,
-        'quantidadeMonitores': atividade.quantidadeMonitores.toString(),
-        'duracao': atividade.duracaoSecao.toString(),
-        'capacidadeVisitante': atividade.capacidadeVisitantes.toString(),
-        'idSublocalidade': atividade.idSublocalidade.toString(),
-        'idProfessor': atividade.idProfessor.toString(),
-        'idFeira': atividade.idFeira.toString(),
-        'status': atividade.status.descricao,
-        'tipo': atividade.tipo.descricao,
-      });
-      return AtividadeSublocalidade.fromJson(response.data);
-    } catch (e) {
-      throw 'Erro ao criar atividade: ${e.toString()}';
-    }
-  }
-
-  Future<void> updateAtividade(int id, AtividadeSublocalidade atividade) async {
-    try {
-      await _dio.put('/atividadeSublocalidades/$id', data: {
-        'nome': atividade.nome,
-        'descricao': atividade.descricao,
-        'quantidadeMonitores': atividade.quantidadeMonitores.toString(),
-        'duracao': atividade.duracaoSecao.toString(),
-        'capacidadeVisitante': atividade.capacidadeVisitantes.toString(),
-        'idSublocalidade': atividade.idSublocalidade.toString(),
-        'idProfessor': atividade.idProfessor.toString(),
-        'idFeira': atividade.idFeira.toString(),
-        'status': atividade.status.descricao,
-        'tipo': atividade.tipo.descricao,
-      });
-      return;
-    } catch (e) {
-      throw 'Erro ao atualizar atividade: ${e.toString()}';
-    }
-  }
-
-  Future<void> deleteAtividade(int id) async {
-    try {
-      await _dio.delete('/atividadeSublocalidades/$id');
+      await _dio.delete('/atividades/$id');
     } catch (e) {
       throw 'Erro ao deletar atividade: ${e.toString()}';
     }

@@ -1,64 +1,24 @@
-class Atividade {
-  final int? id;
-  final String nome;
-  final String descricao;
-  final int quantidadeMonitores;
-  final int idFeira;
-  final int idProfessor;
+enum TipoAtividade { SUBLOCALIDADE, LOCALIDADE }
 
-  Atividade({
-    this.id,
-    required this.nome,
-    required this.descricao,
-    required this.quantidadeMonitores,
-    required this.idFeira,
-    required this.idProfessor,
-  });
-
-  @override
-  String toString() {
-    return 'Atividade {\nid: $id, \nnome: $nome, \ndescricao: $descricao, \nquantidadeMonitores: $quantidadeMonitores, \nidFeira: $idFeira, \nidProfessor: $idProfessor\n}';
-  }
-}
-
-class AtividadeLocalidade extends Atividade {
-  final int idLocalidade;
-
-  AtividadeLocalidade(
-      {super.id,
-      required super.nome,
-      required super.descricao,
-      required super.quantidadeMonitores,
-      required this.idLocalidade,
-      required super.idFeira,
-      required super.idProfessor});
-
-  @override
-  String toString() {
-    return 'Atividade {\nid: $id, \nnome: $nome, \ndescricao: $descricao, \nquantidadeMonitores: $quantidadeMonitores, \nidFeira: $idFeira, \nidProfessor: $idProfessor, \nidLocalidade: $idLocalidade\n}';
+extension TipoAtividadeExtensao on TipoAtividade {
+  String get descricao {
+    switch (this) {
+      case TipoAtividade.SUBLOCALIDADE:
+        return "Sublocalidade";
+      case TipoAtividade.LOCALIDADE:
+        return "Localidade";
+    }
   }
 
-  factory AtividadeLocalidade.fromJson(Map<String, dynamic> json) {
-    return AtividadeLocalidade(
-      id: int.parse(json['id'].toString()),
-      nome: json['nome'],
-      descricao: json['descricao'],
-      quantidadeMonitores: int.parse(json['quantidadeMonitores'].toString()),
-      idLocalidade: int.parse(json['idLocalidade'].toString()),
-      idProfessor: int.parse(json['idProfessor'].toString()),
-      idFeira: int.parse(json['idFeira'].toString()),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'nome': nome,
-      'descricao': descricao,
-      'quantidadeMontiroes': quantidadeMonitores,
-      'idLocalidade': idLocalidade,
-      'idProfessor': idProfessor,
-      'idFeira': idFeira,
-    };
+  static TipoAtividade fromString(String tipoAtividade) {
+    switch (tipoAtividade.toLowerCase()) {
+      case 'sublocalidade':
+        return TipoAtividade.SUBLOCALIDADE;
+      case 'localidade':
+        return TipoAtividade.LOCALIDADE;
+      default:
+        throw ArgumentError('Tipo atividade inválido');
+    }
   }
 }
 
@@ -114,39 +74,47 @@ extension StatusExtensao on Status {
   }
 }
 
-class AtividadeSublocalidade extends Atividade {
-  final int idSublocalidade;
-  final Tipo tipo;
-  final int duracaoSecao;
-  final int capacidadeVisitantes;
-  final Status status;
+class Atividade {
+  final int? id;
+  final String nome;
+  final String descricao;
+  final int quantidadeMonitores;
+  final int idFeira;
+  final int idProfessor;
+  final TipoAtividade tipoAtividade;
+  final Tipo? tipo;
+  final int? duracaoSecao;
+  final int? capacidadeVisitantes;
+  final Status? status;
+  final int? idLocalidade;
+  final int? idSublocalidade;
 
-  AtividadeSublocalidade(
-      {super.id,
-      required super.nome,
-      required super.descricao,
-      required super.quantidadeMonitores,
-      required this.idSublocalidade,
-      required this.tipo,
-      required this.duracaoSecao,
-      required this.capacidadeVisitantes,
-      required this.status,
-      required super.idFeira,
-      required super.idProfessor});
+  Atividade({
+    this.id,
+    required this.nome,
+    required this.descricao,
+    required this.quantidadeMonitores,
+    required this.idFeira,
+    required this.idProfessor,
+    required this.tipoAtividade,
+    this.tipo,
+    this.duracaoSecao,
+    this.capacidadeVisitantes,
+    this.status,
+    this.idLocalidade,
+    this.idSublocalidade,
+  });
 
-  @override
-  String toString() {
-    return 'Atividade {\nid: $id, \nnome: $nome, \ndescricao: $descricao, \nquantidadeMonitores: $quantidadeMonitores, \nidFeira: $idFeira, \nidProfessor: $idProfessor, \nidSublocalidade: $idSublocalidade, \ntipo: $tipo, \nduracaoSecao: $duracaoSecao, \ncapacidadeVisitantes: $capacidadeVisitantes, \nstatus: $status\n}';
-  }
-
-  factory AtividadeSublocalidade.fromJson(Map<String, dynamic> json) {
-    return AtividadeSublocalidade(
+  factory Atividade.fromJson(Map<String, dynamic> json) {
+    return Atividade(
       id: int.parse(json['id'].toString()),
       nome: json['nome'],
       descricao: json['descricao'],
       quantidadeMonitores: int.parse(json['quantidadeMonitores'].toString()),
+      tipoAtividade: TipoAtividadeExtensao.fromString(json['tipoAtividade']),
       duracaoSecao: int.parse(json['duracao'].toString()),
       capacidadeVisitantes: int.parse(json['capacidadeVisitante'].toString()),
+      idLocalidade: int.parse(json['idLocalidade'].toString()),
       idSublocalidade: int.parse(json['idSublocalidade'].toString()),
       idProfessor: int.parse(json['idProfessor'].toString()),
       idFeira: int.parse(json['idFeira'].toString()),
@@ -156,17 +124,29 @@ class AtividadeSublocalidade extends Atividade {
   }
 
   Map<String, dynamic> toJson() {
+    if (tipoAtividade == TipoAtividade.LOCALIDADE) {
+      return {
+        'nome': nome,
+        'descricao': descricao,
+        'quantidadeMontiroes': quantidadeMonitores,
+        'idLocalidade': idLocalidade,
+        'idProfessor': idProfessor,
+        'idFeira': idFeira,
+        'tipoAtividade': tipoAtividade.descricao,
+      };
+    }
     return {
       'nome': nome,
       'descricao': descricao,
       'quantidadeMontiroes': quantidadeMonitores,
-      'duracao': duracaoSecao,
-      'capacidadeVisitante': capacidadeVisitantes,
-      'idSublocalidade': idSublocalidade,
       'idProfessor': idProfessor,
       'idFeira': idFeira,
-      'status': status.descricao,
-      'tipo': tipo.descricao,
+      'idSublocalidade': idSublocalidade,
+      'duracao': duracaoSecao,
+      'capacidadeVisitante': capacidadeVisitantes,
+      'status': status!.descricao,
+      'tipo': tipo!.descricao,
+      'tipoAtividade': tipoAtividade.descricao,
     };
   }
 }

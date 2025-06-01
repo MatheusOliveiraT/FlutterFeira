@@ -1,4 +1,5 @@
 import 'package:feirasystem/assets/bottomAppBarOrganizador.dart';
+import 'package:feirasystem/assets/customSnackBar.dart';
 import 'package:feirasystem/atividade/atividadeModel.dart';
 import 'package:feirasystem/atividade/atividadeService.dart';
 import 'package:feirasystem/feira/feiraModel.dart';
@@ -18,16 +19,12 @@ class Atividades extends StatefulWidget {
 }
 
 class _AtividadesState extends State<Atividades> {
-  final AtividadeLocalidadeService _atividadeLocalidadeService =
-      AtividadeLocalidadeService();
-  final AtividadeSublocalidadeService _atividadeSublocalidadeService =
-      AtividadeSublocalidadeService();
+  final AtividadeService _atividadeService = AtividadeService();
   final FeiraService _feiraService = FeiraService();
   final ProfessorService _professorService = ProfessorService();
   final LocalidadeService _localidadeService = LocalidadeService();
   final SublocalidadeService _sublocalidadeService = SublocalidadeService();
-  late Future<List<AtividadeLocalidade>> _atividadesLocalidade;
-  late Future<List<AtividadeSublocalidade>> _atividadesSublocalidade;
+  late Future<List<Atividade>> _atividades;
   late Future<List<Feira>> _feiras;
   late Future<List<Professor>> _professores;
   late Future<List<Localidade>> _localidades;
@@ -95,8 +92,7 @@ class _AtividadesState extends State<Atividades> {
 
   Future<void> _atualizarAtividades() async {
     setState(() {
-      _atividadesLocalidade = _atividadeLocalidadeService.getAtividades();
-      _atividadesSublocalidade = _atividadeSublocalidadeService.getAtividades();
+      _atividades = _atividadeService.getAtividades();
     });
   }
 
@@ -109,17 +105,19 @@ class _AtividadesState extends State<Atividades> {
         quantidadeMonitores.isEmpty ||
         _feiraSelecionada == null ||
         _professorSelecionado == null) {
-      _mostrarSnackBar('Preencha todos os campos obrigatórios!');
+      showCustomSnackBar(context, 'Preencha todos os campos obrigatórios!',
+          tipo: 'erro');
       return false;
     }
     if (int.tryParse(quantidadeMonitores) == null) {
-      _mostrarSnackBar(
-          'Quantidade de monitores precisa ser um número inteiro.');
+      showCustomSnackBar(
+          context, 'Quantidade de monitores precisa ser um número inteiro.');
       return false;
     }
     if (_opcaoSelecionada == 'Localidade') {
       if (_localidadeSelecionada == null) {
-        _mostrarSnackBar('Preencha todos os campos obrigatórios!');
+        showCustomSnackBar(context, 'Preencha todos os campos obrigatórios!',
+            tipo: 'erro');
         return false;
       }
     } else if (_opcaoSelecionada == 'Sublocalidade') {
@@ -131,81 +129,61 @@ class _AtividadesState extends State<Atividades> {
           _sublocalidadeSelecionada == null ||
           _tipo == null ||
           _status == null) {
-        _mostrarSnackBar('Preencha todos os campos obrigatórios!');
+        showCustomSnackBar(context, 'Preencha todos os campos obrigatórios!',
+            tipo: 'erro');
         return false;
       } else if (int.tryParse(duracaoSecao) == null ||
           int.tryParse(capacidadeVisitantes) == null) {
-        _mostrarSnackBar(
+        showCustomSnackBar(context,
             'Duração da seção e capacidade de visitantes precisam ser um número inteiro.');
         return false;
       }
     } else {
-      _mostrarSnackBar('Preencha todos os campos obrigatórios!');
+      showCustomSnackBar(context, 'Preencha todos os campos obrigatórios!',
+          tipo: 'erro');
       return false;
     }
     return true;
   }
 
-  void _mostrarSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
-
-  Future<void> _mostrarFormAtividades(
-      {AtividadeLocalidade? atividadeLocalidade,
-      AtividadeSublocalidade? atividadeSublocalidade}) async {
-    if (atividadeLocalidade != null) {
-      _controladorNome.text = atividadeLocalidade.nome;
-      _controladorDescricao.text = atividadeLocalidade.descricao;
+  Future<void> _mostrarFormAtividades({Atividade? atividade}) async {
+    if (atividade != null) {
+      _controladorNome.text = atividade.nome;
+      _controladorDescricao.text = atividade.descricao;
       _controladorQuantidadeMonitores.text =
-          atividadeLocalidade.quantidadeMonitores.toString();
-      _controladorCapacidadeVisitantes.clear();
-      _controladorDuracaoSecao.clear();
-      _localidades.then((lista) {
-        _localidadeSelecionada = lista.firstWhere(
-            (localidade) => localidade.id == atividadeLocalidade.idLocalidade);
-      });
-      _sublocalidadeSelecionada = null;
+          atividade.quantidadeMonitores.toString();
       _professores.then((lista) {
-        _professorSelecionado = lista.firstWhere(
-            (professor) => professor.id == atividadeLocalidade.idProfessor);
+        _professorSelecionado = lista
+            .firstWhere((professor) => professor.id == atividade.idProfessor);
       });
       _feiras.then((lista) {
-        _feiraSelecionada = lista
-            .firstWhere((feira) => feira.id == atividadeLocalidade.idFeira);
+        _feiraSelecionada =
+            lista.firstWhere((feira) => feira.id == atividade.idFeira);
       });
-      _status = null;
-      _tipo = null;
-      _opcaoSelecionada = 'Localidade';
-    } else if (atividadeSublocalidade != null) {
-      _controladorNome.text = atividadeSublocalidade.nome;
-      _controladorDescricao.text = atividadeSublocalidade.descricao;
-      _controladorQuantidadeMonitores.text =
-          atividadeSublocalidade.quantidadeMonitores.toString();
-      _controladorCapacidadeVisitantes.text =
-          atividadeSublocalidade.capacidadeVisitantes.toString();
-      _controladorDuracaoSecao.text =
-          atividadeSublocalidade.duracaoSecao.toString();
-      _localidadeSelecionada = null;
-      _sublocalidades.then((lista) {
-        _sublocalidadeSelecionada = lista.firstWhere((sublocalidade) =>
-            sublocalidade.id == atividadeSublocalidade.idSublocalidade);
-      });
-      _professores.then((lista) {
-        _professorSelecionado = lista.firstWhere(
-            (professor) => professor.id == atividadeSublocalidade.idProfessor);
-      });
-      _feiras.then((lista) {
-        _feiraSelecionada = lista
-            .firstWhere((feira) => feira.id == atividadeSublocalidade.idFeira);
-      });
-      _status = atividadeSublocalidade.status;
-      _tipo = atividadeSublocalidade.tipo;
-      _opcaoSelecionada = 'Sublocalidade';
+      if (atividade.tipoAtividade == TipoAtividade.LOCALIDADE) {
+        _localidades.then((lista) {
+          _localidadeSelecionada = lista.firstWhere(
+              (localidade) => localidade.id == atividade.idLocalidade);
+        });
+        _controladorCapacidadeVisitantes.clear();
+        _controladorDuracaoSecao.clear();
+        _sublocalidadeSelecionada = null;
+        _status = null;
+        _tipo = null;
+        _opcaoSelecionada = 'Localidade';
+      } else {
+        _controladorCapacidadeVisitantes.text =
+            atividade.capacidadeVisitantes.toString();
+        _controladorDuracaoSecao.text = atividade.duracaoSecao.toString();
+        _localidadeSelecionada = null;
+        _sublocalidades.then((lista) {
+          _sublocalidadeSelecionada = lista.firstWhere(
+              (sublocalidade) => sublocalidade.id == atividade.idSublocalidade);
+        });
+        _status = atividade.status;
+        _tipo = atividade.tipo;
+        _opcaoSelecionada = 'Sublocalidade';
+      }
     } else {
       _controladorNome.clear();
       _controladorDescricao.clear();
@@ -226,10 +204,8 @@ class _AtividadesState extends State<Atividades> {
         return StatefulBuilder(
           builder: (context, setStateDialog) {
             return AlertDialog(
-              title: Text((atividadeLocalidade == null &&
-                      atividadeSublocalidade == null)
-                  ? 'Criar atividade'
-                  : 'Editar atividade'),
+              title: Text(
+                  (atividade == null) ? 'Criar atividade' : 'Editar atividade'),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -324,8 +300,7 @@ class _AtividadesState extends State<Atividades> {
                                     child: Text(option),
                                   ))
                               .toList(),
-                      onChanged: (atividadeLocalidade != null ||
-                              atividadeSublocalidade != null)
+                      onChanged: (atividade != null)
                           ? null
                           : (value) {
                               setStateDialog(() {
@@ -349,7 +324,7 @@ class _AtividadesState extends State<Atividades> {
                   onPressed: () async {
                     if (_validarForm()) {
                       if (_opcaoSelecionada == 'Localidade') {
-                        final novaAtividade = AtividadeLocalidade(
+                        final novaAtividade = Atividade(
                           nome: _controladorNome.text,
                           descricao: _controladorDescricao.text,
                           quantidadeMonitores:
@@ -357,16 +332,17 @@ class _AtividadesState extends State<Atividades> {
                           idFeira: _feiraSelecionada!.id!,
                           idProfessor: _professorSelecionado!.id!,
                           idLocalidade: _localidadeSelecionada!.id!,
+                          tipoAtividade: TipoAtividade.LOCALIDADE,
                         );
-                        if (atividadeLocalidade != null) {
-                          await _atividadeLocalidadeService.updateAtividade(
-                              atividadeLocalidade.id!, novaAtividade);
+                        if (atividade != null) {
+                          await _atividadeService.updateAtividade(
+                              atividade.id!, novaAtividade);
                         } else {
-                          await _atividadeLocalidadeService
+                          await _atividadeService
                               .createAtividade(novaAtividade);
                         }
                       } else {
-                        final novaAtividade = AtividadeSublocalidade(
+                        final novaAtividade = Atividade(
                           nome: _controladorNome.text,
                           descricao: _controladorDescricao.text,
                           quantidadeMonitores:
@@ -380,25 +356,24 @@ class _AtividadesState extends State<Atividades> {
                               int.parse(_controladorCapacidadeVisitantes.text),
                           status: _status!,
                           tipo: _tipo!,
+                          tipoAtividade: TipoAtividade.SUBLOCALIDADE,
                         );
-                        if (atividadeSublocalidade != null) {
-                          await _atividadeSublocalidadeService.updateAtividade(
-                              atividadeSublocalidade.id!, novaAtividade);
+                        if (atividade != null) {
+                          await _atividadeService.updateAtividade(
+                              atividade.id!, novaAtividade);
                         } else {
-                          await _atividadeSublocalidadeService
+                          await _atividadeService
                               .createAtividade(novaAtividade);
                         }
                       }
                       Navigator.pop(context);
                       _atualizarAtividades();
-                      _mostrarSnackBar(
-                          'Atividade ${(atividadeLocalidade == null && atividadeSublocalidade == null) ? 'criada' : 'atualizada'} com sucesso!');
+                      showCustomSnackBar(context,
+                          'Atividade ${(atividade == null) ? 'criada' : 'atualizada'} com sucesso!',
+                          tipo: 'sucesso');
                     }
                   },
-                  child: Text((atividadeLocalidade == null ||
-                          atividadeSublocalidade == null)
-                      ? 'Criar'
-                      : 'Atualizar'),
+                  child: Text((atividade == null) ? 'Criar' : 'Atualizar'),
                 ),
               ],
             );
@@ -528,19 +503,13 @@ class _AtividadesState extends State<Atividades> {
     return const SizedBox.shrink();
   }
 
-  Future<void> _deleteAtividade(
-      {AtividadeLocalidade? atividadeLocalidade,
-      AtividadeSublocalidade? atividadeSublocalidade}) async {
-    if (atividadeSublocalidade == null && atividadeLocalidade == null) {
-      return;
-    }
+  Future<void> _deleteAtividade(Atividade atividade) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(
-            'Excluir ${(atividadeLocalidade != null) ? atividadeLocalidade.nome : '${atividadeSublocalidade?.nome}'}'),
+        title: Text('Excluir ${atividade.nome}'),
         content: Text(
-            'Você tem certeza que quer excluir a atividade ${(atividadeLocalidade != null) ? atividadeLocalidade.nome : '${atividadeSublocalidade?.nome}'}?'),
+            'Você tem certeza que quer excluir a atividade ${atividade.nome}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -554,15 +523,10 @@ class _AtividadesState extends State<Atividades> {
       ),
     );
     if (confirm == true) {
-      if (atividadeLocalidade != null) {
-        await _atividadeLocalidadeService
-            .deleteAtividade(atividadeLocalidade.id!);
-      } else {
-        await _atividadeSublocalidadeService
-            .deleteAtividade(atividadeSublocalidade!.id!);
-      }
+      await _atividadeService.deleteAtividade(atividade.id!);
       _atualizarAtividades();
-      _mostrarSnackBar('Atividade excluída com sucesso.');
+      showCustomSnackBar(context, 'Atividade excluída com sucesso.',
+          tipo: 'sucesso');
     }
   }
 
@@ -575,8 +539,7 @@ class _AtividadesState extends State<Atividades> {
       body: RefreshIndicator(
         onRefresh: _atualizarAtividades,
         child: FutureBuilder<List<dynamic>>(
-          future:
-              Future.wait([_atividadesLocalidade, _atividadesSublocalidade]),
+          future: Future.wait([_atividades]),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -585,17 +548,11 @@ class _AtividadesState extends State<Atividades> {
               return Center(child: Text('Error: ${snapshot.error}'));
             }
 
-            final atividadesLocalidade =
-                snapshot.data![0] as List<AtividadeLocalidade>;
-            final atividadesSublocalidade =
-                snapshot.data![1] as List<AtividadeSublocalidade>;
+            final atividades = snapshot.data![0] as List<Atividade>;
 
             return ListView(
               children: [
-                ..._buildAtividadeList(atividadesLocalidade,
-                    isLocalidade: true),
-                ..._buildAtividadeList(atividadesSublocalidade,
-                    isLocalidade: false),
+                ..._buildAtividadeList(atividades),
               ],
             );
           },
@@ -609,8 +566,7 @@ class _AtividadesState extends State<Atividades> {
     );
   }
 
-  List<Widget> _buildAtividadeList(List atividades,
-      {required bool isLocalidade}) {
+  List<Widget> _buildAtividadeList(List atividades) {
     return atividades.map((atividade) {
       return Dismissible(
         key: Key(atividade.id.toString()),
@@ -622,8 +578,7 @@ class _AtividadesState extends State<Atividades> {
           child: const Icon(Icons.delete, color: Colors.white),
         ),
         onDismissed: (_) => _deleteAtividade(
-          atividadeLocalidade: isLocalidade ? atividade : null,
-          atividadeSublocalidade: isLocalidade ? null : atividade,
+          atividade,
         ),
         child: ListTile(
           title: Text(atividade.nome),
@@ -633,15 +588,13 @@ class _AtividadesState extends State<Atividades> {
               IconButton(
                 icon: const Icon(Icons.edit),
                 onPressed: () => _mostrarFormAtividades(
-                  atividadeLocalidade: isLocalidade ? atividade : null,
-                  atividadeSublocalidade: isLocalidade ? null : atividade,
+                  atividade: atividade,
                 ),
               ),
               IconButton(
                 icon: const Icon(Icons.delete),
                 onPressed: () => _deleteAtividade(
-                  atividadeLocalidade: isLocalidade ? atividade : null,
-                  atividadeSublocalidade: isLocalidade ? null : atividade,
+                  atividade,
                 ),
               ),
             ],
