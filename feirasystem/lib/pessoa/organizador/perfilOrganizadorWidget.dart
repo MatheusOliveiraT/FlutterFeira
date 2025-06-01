@@ -3,6 +3,7 @@ import 'package:feirasystem/assets/customSnackBar.dart';
 import 'package:feirasystem/assets/formFields/passwordField.dart';
 import 'package:feirasystem/assets/formFields/phoneField.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PerfilOrganizadores extends StatefulWidget {
   const PerfilOrganizadores({super.key});
@@ -18,6 +19,21 @@ class _PerfilOrganizadoresState extends State<PerfilOrganizadores> {
   final TextEditingController _controladorNSenha = TextEditingController();
   final TextEditingController _controladorCSenha = TextEditingController();
   bool _editSenha = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _getSharedPreferences();
+  }
+
+  Future<void> _getSharedPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _controladorNome.text = prefs.getString('nome') ?? '';
+      _controladorEmail.text = prefs.getString('email') ?? '';
+      _controladorCelular.text = prefs.getString('celular') ?? '';
+    });
+  }
 
   bool _validarForm() {
     String nome = _controladorNome.text.trim();
@@ -112,7 +128,13 @@ class _PerfilOrganizadoresState extends State<PerfilOrganizadores> {
                   onPressed: () async {
                     if (_validarForm()) {
                       try {
-                        // TO DO
+                        // TO DO - API CONNECTION
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.setString('nome', _controladorNome.text);
+                        await prefs.setString('email', _controladorEmail.text);
+                        await prefs.setString(
+                            'celular', _controladorCelular.text);
+                        await _getSharedPreferences();
                         Navigator.pop(context);
                         showCustomSnackBar(context,
                             'Seus dados foram atualizados com sucesso!');
@@ -172,7 +194,12 @@ class _PerfilOrganizadoresState extends State<PerfilOrganizadores> {
     );
 
     if (confirm == true) {
-      // TO DO
+      // TO DO - API CONNECTION
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('nome', '');
+      await prefs.setString('email', '');
+      await prefs.setString('celular', '');
+      await _getSharedPreferences();
       Navigator.pushNamedAndRemoveUntil(
           context, 'usuario', (Route<dynamic> route) => false);
       showCustomSnackBar(context, 'Sua conta foi excluída com sucesso.');
@@ -185,71 +212,72 @@ class _PerfilOrganizadoresState extends State<PerfilOrganizadores> {
       appBar: AppBar(
         title: const Text('Perfil'),
       ),
-      body: Center(
+      body: RefreshIndicator(
+          onRefresh: _getSharedPreferences,
           child: SingleChildScrollView(
-        padding: const EdgeInsets.all((16.0)),
-        child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: 400,
-                    minWidth: 200,
-                  ),
-                  child: Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 10),
-                      child: ListTile(
-                        title: Text(_controladorNome.text),
-                        subtitle: const Text('Nome'),
-                      )),
-                ),
-                const SizedBox(height: 16),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: 400,
-                    minWidth: 200,
-                  ),
-                  child: Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 10),
-                      child: ListTile(
-                        title: Text(_controladorEmail.text),
-                        subtitle: const Text('E-mail'),
-                      )),
-                ),
-                const SizedBox(height: 16),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: 400,
-                    minWidth: 200,
-                  ),
-                  child: Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 10),
-                      child: ListTile(
-                        title: Text(_controladorCelular.text),
-                        subtitle: const Text('Celular'),
-                      )),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    _editConta();
-                  },
-                  label: const Text('Editar seus dados'),
-                  icon: const Icon(Icons.edit),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    _deleteConta();
-                  },
-                  label: const Text('Excluir sua conta'),
-                  icon: const Icon(Icons.delete),
-                )
-              ],
-            )),
-      )),
+            padding: const EdgeInsets.all((16.0)),
+            child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: 400,
+                        minWidth: 200,
+                      ),
+                      child: Card(
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          child: ListTile(
+                            title: Text(_controladorNome.text),
+                            subtitle: const Text('Nome'),
+                          )),
+                    ),
+                    const SizedBox(height: 16),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: 400,
+                        minWidth: 200,
+                      ),
+                      child: Card(
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          child: ListTile(
+                            title: Text(_controladorEmail.text),
+                            subtitle: const Text('E-mail'),
+                          )),
+                    ),
+                    const SizedBox(height: 16),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: 400,
+                        minWidth: 200,
+                      ),
+                      child: Card(
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          child: ListTile(
+                            title: Text(_controladorCelular.text),
+                            subtitle: const Text('Celular'),
+                          )),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        _editConta();
+                      },
+                      label: const Text('Editar seus dados'),
+                      icon: const Icon(Icons.edit),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        _deleteConta();
+                      },
+                      label: const Text('Excluir sua conta'),
+                      icon: const Icon(Icons.delete),
+                    )
+                  ],
+                )),
+          )),
       bottomNavigationBar: const BottomAppBarOrganizador(),
     );
   }

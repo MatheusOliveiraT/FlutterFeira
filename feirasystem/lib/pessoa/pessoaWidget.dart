@@ -34,13 +34,6 @@ class Pessoas extends StatelessWidget {
             },
             child: const Text('Cadastre-se como monitor'),
           ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pushNamed(context, 'usuario/organizador');
-            },
-            child: const Text('Cadastre-se como organizador'), // questionável
-          ),
           const SizedBox(height: 64),
           ConstrainedBox(
             constraints: const BoxConstraints(

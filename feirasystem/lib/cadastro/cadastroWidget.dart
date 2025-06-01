@@ -62,6 +62,13 @@ class Cadastro extends StatelessWidget {
               },
               child: const Text('Atividades'),
             ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, 'usuario/organizador');
+              },
+              child: const Text('Organizador'),
+            ),
           ],
         ),
       ),

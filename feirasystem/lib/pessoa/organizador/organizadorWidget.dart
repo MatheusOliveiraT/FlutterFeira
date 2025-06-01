@@ -67,7 +67,7 @@ class _OrganizadoresState extends State<Organizadores> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cadastre-se'),
+        title: const Text('Cadastrar organizador'),
       ),
       backgroundColor: const Color.fromARGB(255, 236, 239, 243),
       body: Center(
@@ -92,7 +92,7 @@ class _OrganizadoresState extends State<Organizadores> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   const Text(
-                    'Cadastre-se como organizador',
+                    'Cadastrar organizador',
                     style: TextStyle(fontSize: 18),
                   ),
                   const SizedBox(height: 16),
