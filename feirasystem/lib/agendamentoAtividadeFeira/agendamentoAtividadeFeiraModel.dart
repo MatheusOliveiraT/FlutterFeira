@@ -12,6 +12,24 @@ class AgendamentoAtividadeFeira {
 
   @override
   String toString() {
-    return 'Atividade{\nid: $id, \nquantidadeMonitoresInscrito: $quantidadeMonitoresInscrito, \nidAgendamentoFeira: $idAgendamentoFeira, \nidAtividade: $idAtividade\n}';
+    return 'AgendamentoAtividadeFeira {\nid: $id, \nquantidadeMonitoresInscrito: $quantidadeMonitoresInscrito, \nidAgendamentoFeira: $idAgendamentoFeira, \nidAtividade: $idAtividade\n}';
+  }
+
+  factory AgendamentoAtividadeFeira.fromJson(Map<String, dynamic> json) {
+    return AgendamentoAtividadeFeira(
+      id: int.parse(json['id'].toString()),
+      quantidadeMonitoresInscrito:
+          int.parse(json['quantidadeMonitoresInscrito'].toString()),
+      idAgendamentoFeira: int.parse(json['AgendamentoFeira'].toString()),
+      idAtividade: int.parse(json['idAtividade'].toString()),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'quantidadeMonitoresInscrito': quantidadeMonitoresInscrito,
+      'idAgendamentoFeira': idAgendamentoFeira,
+      'idAtividade': idAtividade,
+    };
   }
 }

@@ -65,6 +65,14 @@ class Cadastro extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
+                Navigator.pushNamed(
+                    context, 'cadastro/agendamentoAtividadeFeira');
+              },
+              child: const Text('Agendamento de atividade de feira'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
                 Navigator.pushNamed(context, 'usuario/organizador');
               },
               child: const Text('Organizador'),

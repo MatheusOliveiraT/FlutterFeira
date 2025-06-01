@@ -79,7 +79,7 @@ class AgendamentoFeiraService {
 
   Future<void> deleteAgendamento(int id) async {
     try {
-      await _dio.delete('/agendamentoFeira/$id');
+      await _dio.delete('/agendamentoFeiras/$id');
     } catch (e) {
       throw 'Erro ao deletar agendamento: ${e.toString()}';
     }

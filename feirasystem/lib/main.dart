@@ -1,3 +1,4 @@
+import 'package:feirasystem/agendamentoAtividadeFeira/agendamentoAtividadeFeiraWidget.dart';
 import 'package:feirasystem/departamento/departamentoWidget.dart';
 import 'package:feirasystem/homepage/homePageMonitor.dart';
 import 'package:feirasystem/homepage/homePageOrganizador.dart';
@@ -169,6 +170,9 @@ Route<dynamic> gerarRotaComAnimacao(RouteSettings settings) {
       break;
     case 'cadastro/professor':
       pagina = const Professores();
+      break;
+    case 'cadastro/agendamentoAtividadeFeira':
+      pagina = const AgendamentosAtividadeFeira();
       break;
     case 'usuario/login':
       pagina = const Login();

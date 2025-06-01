@@ -211,13 +211,10 @@ class _PerfilMonitoresState extends State<PerfilMonitores> {
     if (confirm == true) {
       // TO DO - API CONNECTION
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('nome', '');
-      await prefs.setString('email', '');
-      await prefs.setString('celular', '');
-      await prefs.setString('ra', '');
+      await prefs.clear();
       await _getSharedPreferences();
       Navigator.pushNamedAndRemoveUntil(
-          context, 'usuario', (Route<dynamic> route) => false);
+          context, '', (Route<dynamic> route) => false);
       showCustomSnackBar(context, 'Sua conta foi excluída com sucesso.');
     }
   }
