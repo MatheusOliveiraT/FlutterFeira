@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class BottomAppBarOrganizador extends StatelessWidget {
-  const BottomAppBarOrganizador({super.key});
+class BottomAppBarMonitor extends StatelessWidget {
+  const BottomAppBarMonitor({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -10,16 +10,9 @@ class BottomAppBarOrganizador extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _buildCircleIcon(
-            icon: Icons.add,
-            onPressed: () {
-              Navigator.pushNamed(context, 'cadastro');
-            },
-          ),
-          const SizedBox(width: 32),
-          _buildCircleIcon(
             icon: Icons.home,
             onPressed: () {
-              Navigator.pushNamed(context, 'organizador');
+              Navigator.pushNamed(context, 'monitor');
             },
           ),
           const SizedBox(width: 32),
@@ -33,7 +26,7 @@ class BottomAppBarOrganizador extends StatelessWidget {
           _buildCircleIcon(
             icon: Icons.account_circle,
             onPressed: () {
-              Navigator.pushNamed(context, 'usuario/perfil/organizador');
+              Navigator.pushNamed(context, 'usuario/perfil/monitor');
             },
           ),
         ],

@@ -1,3 +1,4 @@
+import 'package:feirasystem/assets/bottomAppBarOrganizador.dart';
 import 'package:feirasystem/assets/customSnackBar.dart';
 import 'package:flutter/material.dart';
 import 'package:feirasystem/assets/formFields/passwordField.dart';
@@ -57,7 +58,6 @@ class _OrganizadoresState extends State<Organizadores> {
     if (_validarForm()) {
       showCustomSnackBar(context, 'Cadastrado com sucesso!',
           tipo: 'sucesso', duracao: 2);
-      Navigator.pushNamed(context, '');
       return true;
     }
     return false;
@@ -162,7 +162,7 @@ class _OrganizadoresState extends State<Organizadores> {
                     ),
                     child: PasswordField(
                       controller: _controladorCSenha,
-                      label: 'Confirme sua senha',
+                      label: 'Confirme a senha',
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -179,6 +179,7 @@ class _OrganizadoresState extends State<Organizadores> {
           ),
         ),
       ),
+      bottomNavigationBar: const BottomAppBarOrganizador(),
     );
   }
 }

@@ -1,4 +1,6 @@
 import 'package:feirasystem/departamento/departamentoWidget.dart';
+import 'package:feirasystem/homepage/homePageMonitor.dart';
+import 'package:feirasystem/homepage/homePageOrganizador.dart';
 import 'package:feirasystem/pessoa/loginWidget.dart';
 import 'package:feirasystem/pessoa/monitor/perfilMonitorWidget.dart';
 import 'package:feirasystem/pessoa/organizador/perfilOrganizadorWidget.dart';
@@ -133,7 +135,16 @@ Route<dynamic> gerarRotaComAnimacao(RouteSettings settings) {
 
   switch (settings.name) {
     case '':
+      pagina = const Pessoas();
+      break;
+    case 'homePage':
       pagina = const HomePage();
+      break;
+    case 'organizador':
+      pagina = const HomePageOrganizador();
+      break;
+    case 'monitor':
+      pagina = const HomePageMonitor();
       break;
     case 'cadastro':
       pagina = const Cadastro();
@@ -158,9 +169,6 @@ Route<dynamic> gerarRotaComAnimacao(RouteSettings settings) {
       break;
     case 'cadastro/professor':
       pagina = const Professores();
-      break;
-    case 'usuario':
-      pagina = const Pessoas();
       break;
     case 'usuario/login':
       pagina = const Login();

@@ -1,4 +1,3 @@
-import 'package:feirasystem/assets/bottomAppBarOrganizador.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -21,13 +20,19 @@ class _HomePageState extends State<HomePage> {
         children: [
           ElevatedButton(
             onPressed: () {
-              Navigator.pushNamed(context, 'usuario');
+              Navigator.pushNamed(context, 'organizador');
             },
-            child: const Text('Usuários'),
+            child: const Text('Organizador'),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(context, 'monitor');
+            },
+            child: const Text('Monitor'),
           ),
         ],
       )),
-      bottomNavigationBar: const BottomAppBarOrganizador(),
     );
   }
 }

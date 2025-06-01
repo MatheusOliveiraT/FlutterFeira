@@ -60,7 +60,7 @@ class _MonitoresState extends State<Monitores> {
     if (_validarForm()) {
       showCustomSnackBar(context, 'Cadastrado com sucesso!',
           tipo: 'sucesso', duracao: 2);
-      Navigator.pushNamed(context, '');
+      Navigator.pushNamed(context, 'monitor');
       return true;
     }
     return false;
