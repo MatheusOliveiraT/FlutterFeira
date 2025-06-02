@@ -8,6 +8,7 @@ import 'package:feirasystem/agendamentoAtividadeFeira/agendamentoAtividadeFeiraS
 import 'package:feirasystem/assets/bottomAppBarOrganizador.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 class AgendamentosAtividadeFeira extends StatefulWidget {
   const AgendamentosAtividadeFeira({super.key});
@@ -27,8 +28,9 @@ class _AgendamentosAtividadeFeiraState
   late Future<List<Atividade>> _atividades;
   late Future<List<AgendamentoAtividadeFeira>> _agendamentosAtividadeFeira;
 
-  AgendamentoFeira? _agendamentoSelecionado;
+  List<AgendamentoFeira> _agendamentosSelecionados = [];
   Atividade? _atividadeSelecionada;
+  int _maxAgendamentosPermitidos = 999;
 
   @override
   void initState() {
@@ -39,7 +41,7 @@ class _AgendamentosAtividadeFeiraState
   }
 
   bool _validarForm() {
-    if (_agendamentoSelecionado == null || _atividadeSelecionada == null) {
+    if (_agendamentosSelecionados.isEmpty || _atividadeSelecionada == null) {
       showCustomSnackBar(context, 'Preencha todos os campos obrigatórios!',
           tipo: 'erro');
       return false;
@@ -70,16 +72,19 @@ class _AgendamentosAtividadeFeiraState
       {AgendamentoAtividadeFeira? agendamentoAtividadeFeira}) async {
     if (agendamentoAtividadeFeira != null) {
       _agendamentosFeira.then((lista) {
-        _agendamentoSelecionado = lista.firstWhere((agendamento) =>
-            agendamento.id == agendamentoAtividadeFeira.idAgendamentoFeira);
+        _agendamentosSelecionados = lista.firstWhere((agendamento) =>
+                agendamento.id == agendamentoAtividadeFeira.idAgendamentoFeira)
+            as List<AgendamentoFeira>;
       });
       _atividades.then((lista) {
         _atividadeSelecionada = lista.firstWhere((atividade) =>
             atividade.id == agendamentoAtividadeFeira.idAtividade);
       });
+      _maxAgendamentosPermitidos = 1;
     } else {
-      _agendamentoSelecionado = null;
+      _agendamentosSelecionados = [];
       _atividadeSelecionada = null;
+      _maxAgendamentosPermitidos = 999;
     }
     showDialog(
       context: context,
@@ -108,58 +113,98 @@ class _AgendamentosAtividadeFeiraState
                               'Nenhum agendamento de feira encontrado');
                         } else {
                           final agendamentosFeira = snapshot.data!;
-                          return DropdownButtonFormField<AgendamentoFeira>(
-                            value: _agendamentoSelecionado,
-                            hint:
-                                const Text("Selecione um agendamento de feira"),
+                          return MultiSelectDialogField<AgendamentoFeira>(
                             items: agendamentosFeira
-                                .map((AgendamentoFeira agendamento) {
-                              return DropdownMenuItem<AgendamentoFeira>(
-                                value: agendamento,
-                                child: Text(agendamento.data.toIso8601String()),
-                              );
-                            }).toList(),
-                            onChanged: (AgendamentoFeira? novoAgendamento) {
-                              setStateDialog(() {
-                                _agendamentoSelecionado = novoAgendamento;
-                              });
+                                .map((e) => MultiSelectItem<AgendamentoFeira>(
+                                    e, DateFormat('dd/MM/yyyy').format(e.data)))
+                                .toList(),
+                            title: const Text("Agendamentos de Feira"),
+                            buttonText: const Text("Selecione os agendamentos"),
+                            initialValue: _agendamentosSelecionados,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              border: Border.all(color: Colors.grey),
+                            ),
+                            selectedColor:
+                                const Color.fromARGB(255, 50, 136, 242),
+                            confirmText: const Text(
+                              "Salvar",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                            ),
+                            cancelText: const Text(
+                              "Cancelar",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                            ),
+                            onConfirm: (values) {
+                              if (values.length > _maxAgendamentosPermitidos) {
+                                showCustomSnackBar(
+                                  context,
+                                  'Você só pode selecionar até $_maxAgendamentosPermitidos agendamento${_maxAgendamentosPermitidos == 1 ? '' : 's'}.',
+                                  tipo: 'erro',
+                                );
+                              } else {
+                                setStateDialog(() {
+                                  _agendamentosSelecionados = values;
+                                });
+                              }
                             },
+                            validator: (values) {
+                              if (values == null || values.isEmpty) {
+                                return 'Selecione pelo menos um agendamento.';
+                              } else if (values.length >
+                                  _maxAgendamentosPermitidos) {
+                                return 'Máximo de $_maxAgendamentosPermitidos selecionado${_maxAgendamentosPermitidos == 1 ? '' : 's'}.';
+                              }
+                              return null;
+                            },
+                            chipDisplay: MultiSelectChipDisplay(
+                              onTap: (item) {
+                                setStateDialog(() {
+                                  _agendamentosSelecionados.remove(item);
+                                });
+                              },
+                            ),
                           );
                         }
                       },
                     ),
                     const SizedBox(height: 10),
                     FutureBuilder<List<Atividade>>(
-                      future: _atividades,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const CircularProgressIndicator();
-                        } else if (snapshot.hasError) {
-                          return Text('Erro: ${snapshot.error}');
-                        } else if (!snapshot.hasData ||
-                            snapshot.data!.isEmpty) {
-                          return const Text('Nenhuma atividade encontrada');
-                        } else {
-                          final atividades = snapshot.data!;
-                          return DropdownButtonFormField<Atividade>(
-                            value: _atividadeSelecionada,
-                            hint: const Text("Selecione uma atividade"),
-                            items: atividades.map((Atividade atividade) {
-                              return DropdownMenuItem<Atividade>(
-                                value: atividade,
-                                child: Text(atividade.nome),
-                              );
-                            }).toList(),
-                            onChanged: (Atividade? novaAtividade) {
-                              setStateDialog(() {
-                                _atividadeSelecionada = novaAtividade;
-                              });
-                            },
-                          );
-                        }
-                      },
-                    ),
+                        future: _atividades,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return Text('Erro: ${snapshot.error}');
+                          } else if (!snapshot.hasData ||
+                              snapshot.data!.isEmpty) {
+                            return const Text('Nenhuma atividade encontrada');
+                          } else {
+                            final atividades = snapshot.data!;
+                            return DropdownButtonFormField<Atividade>(
+                              value: _atividadeSelecionada,
+                              hint: const Text("Selecione uma atividade"),
+                              items: atividades.map((Atividade atividade) {
+                                return DropdownMenuItem<Atividade>(
+                                  value: atividade,
+                                  child: Text(atividade.nome),
+                                );
+                              }).toList(),
+                              onChanged: (Atividade? novaAtividade) {
+                                setStateDialog(() {
+                                  _atividadeSelecionada = novaAtividade;
+                                });
+                              },
+                            );
+                          }
+                        }),
                   ],
                 ),
               ),
@@ -171,31 +216,42 @@ class _AgendamentosAtividadeFeiraState
                 TextButton(
                   onPressed: () async {
                     if (_validarForm()) {
-                      int quantidadeMonitores;
+                      int quantidadeMonitores = agendamentoAtividadeFeira
+                              ?.quantidadeMonitoresInscrito ??
+                          0;
+
                       if (agendamentoAtividadeFeira != null) {
-                        quantidadeMonitores = agendamentoAtividadeFeira
-                            .quantidadeMonitoresInscrito;
-                      } else {
-                        quantidadeMonitores = 0;
-                      }
-                      final newAgendamentoAtividadeFeira =
-                          AgendamentoAtividadeFeira(
-                              quantidadeMonitoresInscrito: quantidadeMonitores,
-                              idAgendamentoFeira: _agendamentoSelecionado!.id!,
-                              idAtividade: _atividadeSelecionada!.id!);
-                      if (agendamentoAtividadeFeira != null) {
+                        // Atualização única (mantém compatibilidade com edição)
+                        final novo = AgendamentoAtividadeFeira(
+                          quantidadeMonitoresInscrito: quantidadeMonitores,
+                          idAgendamentoFeira:
+                              _agendamentosSelecionados.first.id!,
+                          idAtividade: _atividadeSelecionada!.id!,
+                        );
                         await _agendamentoAtividadeFeiraService
-                            .updateAgendamento(agendamentoAtividadeFeira.id!,
-                                newAgendamentoAtividadeFeira);
+                            .updateAgendamento(
+                          agendamentoAtividadeFeira.id!,
+                          novo,
+                        );
                       } else {
-                        await _agendamentoAtividadeFeiraService
-                            .createAgendamento(newAgendamentoAtividadeFeira);
+                        // Criação múltipla
+                        for (final agendamento in _agendamentosSelecionados) {
+                          final novo = AgendamentoAtividadeFeira(
+                            quantidadeMonitoresInscrito: 0,
+                            idAgendamentoFeira: agendamento.id!,
+                            idAtividade: _atividadeSelecionada!.id!,
+                          );
+                          await _agendamentoAtividadeFeiraService
+                              .createAgendamento(novo);
+                        }
                       }
                       Navigator.pop(context);
                       _atualizarAgendamentosFeira();
-                      showCustomSnackBar(context,
-                          'Agendamento de atividade de feira ${agendamentoAtividadeFeira == null ? 'criado' : 'atualizado'} com sucesso!',
-                          tipo: 'sucesso');
+                      showCustomSnackBar(
+                        context,
+                        'Agendamento de atividade de feira ${agendamentoAtividadeFeira == null ? 'criado' : 'atualizado'} com sucesso!',
+                        tipo: 'sucesso',
+                      );
                     }
                   },
                   child: Text(agendamentoAtividadeFeira == null
