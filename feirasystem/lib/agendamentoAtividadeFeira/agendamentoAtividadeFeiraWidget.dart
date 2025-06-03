@@ -28,6 +28,7 @@ class _AgendamentosAtividadeFeiraState
   late Future<List<Atividade>> _atividades;
   late Future<List<AgendamentoAtividadeFeira>> _agendamentosAtividadeFeira;
 
+  List<AgendamentoFeira> _agendamentos = [];
   List<AgendamentoFeira> _agendamentosSelecionados = [];
   Atividade? _atividadeSelecionada;
   int _maxAgendamentosPermitidos = 999;
@@ -68,6 +69,15 @@ class _AgendamentosAtividadeFeiraState
     });
   }
 
+  Future<void> _atualizarAgendamentos(int idFeira) async {
+    setState(() {
+      _agendamentos = [];
+      _agendamentosSelecionados = [];
+    });
+    final agendamentos = await _agendamentosFeira;
+    _agendamentos = agendamentos.where((a) => a.idFeira == idFeira).toList();
+  }
+
   Future<void> _mostrarFormAgendamentoAtividadeFeira(
       {AgendamentoAtividadeFeira? agendamentoAtividadeFeira}) async {
     if (agendamentoAtividadeFeira != null) {
@@ -99,82 +109,6 @@ class _AgendamentosAtividadeFeiraState
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    FutureBuilder<List<AgendamentoFeira>>(
-                      future: _agendamentosFeira,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const CircularProgressIndicator();
-                        } else if (snapshot.hasError) {
-                          return Text('Erro: ${snapshot.error}');
-                        } else if (!snapshot.hasData ||
-                            snapshot.data!.isEmpty) {
-                          return const Text(
-                              'Nenhum agendamento de feira encontrado');
-                        } else {
-                          final agendamentosFeira = snapshot.data!;
-                          return MultiSelectDialogField<AgendamentoFeira>(
-                            items: agendamentosFeira
-                                .map((e) => MultiSelectItem<AgendamentoFeira>(
-                                    e, DateFormat('dd/MM/yyyy').format(e.data)))
-                                .toList(),
-                            title: const Text("Agendamentos de Feira"),
-                            buttonText: const Text("Selecione os agendamentos"),
-                            initialValue: _agendamentosSelecionados,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              border: Border.all(color: Colors.grey),
-                            ),
-                            selectedColor:
-                                const Color.fromARGB(255, 50, 136, 242),
-                            confirmText: const Text(
-                              "Salvar",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                              ),
-                            ),
-                            cancelText: const Text(
-                              "Cancelar",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                              ),
-                            ),
-                            onConfirm: (values) {
-                              if (values.length > _maxAgendamentosPermitidos) {
-                                showCustomSnackBar(
-                                  context,
-                                  'Você só pode selecionar até $_maxAgendamentosPermitidos agendamento${_maxAgendamentosPermitidos == 1 ? '' : 's'}.',
-                                  tipo: 'erro',
-                                );
-                              } else {
-                                setStateDialog(() {
-                                  _agendamentosSelecionados = values;
-                                });
-                              }
-                            },
-                            validator: (values) {
-                              if (values == null || values.isEmpty) {
-                                return 'Selecione pelo menos um agendamento.';
-                              } else if (values.length >
-                                  _maxAgendamentosPermitidos) {
-                                return 'Máximo de $_maxAgendamentosPermitidos selecionado${_maxAgendamentosPermitidos == 1 ? '' : 's'}.';
-                              }
-                              return null;
-                            },
-                            chipDisplay: MultiSelectChipDisplay(
-                              onTap: (item) {
-                                setStateDialog(() {
-                                  _agendamentosSelecionados.remove(item);
-                                });
-                              },
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 10),
                     FutureBuilder<List<Atividade>>(
                         future: _atividades,
                         builder: (context, snapshot) {
@@ -201,10 +135,70 @@ class _AgendamentosAtividadeFeiraState
                                 setStateDialog(() {
                                   _atividadeSelecionada = novaAtividade;
                                 });
+                                if (novaAtividade != null) {
+                                  _atualizarAgendamentos(novaAtividade.idFeira);
+                                }
                               },
                             );
                           }
                         }),
+                    const SizedBox(height: 10),
+                    MultiSelectDialogField<AgendamentoFeira>(
+                      items: _agendamentos
+                          .map((e) => MultiSelectItem<AgendamentoFeira>(e,
+                              '${DateFormat('dd/MM/yyyy').format(e.data)} ${e.turno.descricao}'))
+                          .toList(),
+                      title: const Text("Agendamentos de Feira"),
+                      buttonText: const Text("Selecione os agendamentos"),
+                      initialValue: _agendamentosSelecionados,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(color: Colors.grey),
+                      ),
+                      selectedColor: const Color.fromARGB(255, 50, 136, 242),
+                      confirmText: const Text(
+                        "Salvar",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                      cancelText: const Text(
+                        "Cancelar",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                      onConfirm: (values) {
+                        if (values.length > _maxAgendamentosPermitidos) {
+                          showCustomSnackBar(
+                            context,
+                            'Você só pode selecionar até $_maxAgendamentosPermitidos agendamento${_maxAgendamentosPermitidos == 1 ? '' : 's'}.',
+                            tipo: 'erro',
+                          );
+                        } else {
+                          setStateDialog(() {
+                            _agendamentosSelecionados = values;
+                          });
+                        }
+                      },
+                      validator: (values) {
+                        if (values == null || values.isEmpty) {
+                          return 'Selecione pelo menos um agendamento.';
+                        } else if (values.length > _maxAgendamentosPermitidos) {
+                          return 'Máximo de $_maxAgendamentosPermitidos selecionado${_maxAgendamentosPermitidos == 1 ? '' : 's'}.';
+                        }
+                        return null;
+                      },
+                      chipDisplay: MultiSelectChipDisplay(
+                        onTap: (item) {
+                          setStateDialog(() {
+                            _agendamentosSelecionados.remove(item);
+                          });
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -219,9 +213,7 @@ class _AgendamentosAtividadeFeiraState
                       int quantidadeMonitores = agendamentoAtividadeFeira
                               ?.quantidadeMonitoresInscrito ??
                           0;
-
                       if (agendamentoAtividadeFeira != null) {
-                        // Atualização única (mantém compatibilidade com edição)
                         final novo = AgendamentoAtividadeFeira(
                           quantidadeMonitoresInscrito: quantidadeMonitores,
                           idAgendamentoFeira:
@@ -234,7 +226,6 @@ class _AgendamentosAtividadeFeiraState
                           novo,
                         );
                       } else {
-                        // Criação múltipla
                         for (final agendamento in _agendamentosSelecionados) {
                           final novo = AgendamentoAtividadeFeira(
                             quantidadeMonitoresInscrito: 0,
@@ -343,17 +334,16 @@ class _AgendamentosAtividadeFeiraState
                   onDismissed: (_) => _deleteAgendamentoAtividadeFeira(
                       agendamentoAtividadeFeira),
                   child: ListTile(
+                    onTap: () {
+                      // TO DO: Encaminhar para página de visualização do agendamento
+                    },
                     title: Text(atividades
                         .firstWhere((atividade) =>
                             atividade.id ==
                             agendamentoAtividadeFeira.idAtividade)
                         .nome),
-                    subtitle: Text(DateFormat('dd/MM/yyyy').format(
-                        agendamentosFeira
-                            .firstWhere((agendamentoFeira) =>
-                                agendamentoFeira.id ==
-                                agendamentoAtividadeFeira.idAgendamentoFeira)
-                            .data)),
+                    subtitle: Text(
+                        'Data: ${DateFormat('dd/MM/yyyy').format(agendamentosFeira.firstWhere((agendamentoFeira) => agendamentoFeira.id == agendamentoAtividadeFeira.idAgendamentoFeira).data)}\nTurno: ${agendamentosFeira.firstWhere((agendamentoFeira) => agendamentoFeira.id == agendamentoAtividadeFeira.idAgendamentoFeira).turno.descricao}'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
