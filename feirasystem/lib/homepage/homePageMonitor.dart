@@ -56,7 +56,7 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '');
+                Navigator.pushNamed(context, 'monitor/atividades');
               },
               child: const Text('Minhas atividades'),
             ),

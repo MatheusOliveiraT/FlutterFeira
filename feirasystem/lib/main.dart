@@ -2,6 +2,7 @@ import 'package:feirasystem/agendamentoAtividadeFeira/agendamentoAtividadeFeiraW
 import 'package:feirasystem/departamento/departamentoWidget.dart';
 import 'package:feirasystem/homepage/homePageMonitor.dart';
 import 'package:feirasystem/homepage/homePageOrganizador.dart';
+import 'package:feirasystem/monitorAtividade/monitorAtividadeWidget.dart';
 import 'package:feirasystem/pessoa/loginWidget.dart';
 import 'package:feirasystem/pessoa/monitor/perfilMonitorWidget.dart';
 import 'package:feirasystem/pessoa/organizador/perfilOrganizadorWidget.dart';
@@ -188,6 +189,9 @@ Route<dynamic> gerarRotaComAnimacao(RouteSettings settings) {
       break;
     case 'usuario/perfil/monitor':
       pagina = const PerfilMonitores();
+      break;
+    case 'monitor/atividades':
+      pagina = const MonitorAtividades();
       break;
   }
 
