@@ -1,3 +1,4 @@
+import 'package:feirasystem/agendamentoAtividadeFeira/detalhesAgendamentoAtividadeFeiraWidget.dart';
 import 'package:feirasystem/agendamentoFeira/agendamentoFeiraModel.dart';
 import 'package:feirasystem/agendamentoFeira/agendamentoFeiraService.dart';
 import 'package:feirasystem/assets/customSnackBar.dart';
@@ -335,7 +336,16 @@ class _AgendamentosAtividadeFeiraState
                       agendamentoAtividadeFeira),
                   child: ListTile(
                     onTap: () {
-                      // TO DO: Encaminhar para página de visualização do agendamento
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              DetalhesAgendamentosAtividadeFeira(
+                            agendamento: agendamentoAtividadeFeira,
+                            builder: (context) {},
+                          ),
+                        ),
+                      );
                     },
                     title: Text(atividades
                         .firstWhere((atividade) =>

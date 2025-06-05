@@ -207,75 +207,69 @@ class _PerfilOrganizadoresState extends State<PerfilOrganizadores> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Perfil'),
-      ),
+      appBar: AppBar(title: const Text('Perfil')),
       body: RefreshIndicator(
-          onRefresh: _getSharedPreferences,
+        onRefresh: _getSharedPreferences,
+        child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all((16.0)),
-            child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        maxWidth: 400,
-                        minWidth: 200,
-                      ),
-                      child: Card(
-                          margin: const EdgeInsets.symmetric(horizontal: 10),
-                          child: ListTile(
-                            title: Text(_controladorNome.text),
-                            subtitle: const Text('Nome'),
-                          )),
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ConstrainedBox(
+                  constraints:
+                      const BoxConstraints(maxWidth: 400, minWidth: 200),
+                  child: Card(
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    child: ListTile(
+                      title: Text(_controladorNome.text),
+                      subtitle: const Text('Nome'),
                     ),
-                    const SizedBox(height: 16),
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        maxWidth: 400,
-                        minWidth: 200,
-                      ),
-                      child: Card(
-                          margin: const EdgeInsets.symmetric(horizontal: 10),
-                          child: ListTile(
-                            title: Text(_controladorEmail.text),
-                            subtitle: const Text('E-mail'),
-                          )),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ConstrainedBox(
+                  constraints:
+                      const BoxConstraints(maxWidth: 400, minWidth: 200),
+                  child: Card(
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    child: ListTile(
+                      title: Text(_controladorEmail.text),
+                      subtitle: const Text('E-mail'),
                     ),
-                    const SizedBox(height: 16),
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        maxWidth: 400,
-                        minWidth: 200,
-                      ),
-                      child: Card(
-                          margin: const EdgeInsets.symmetric(horizontal: 10),
-                          child: ListTile(
-                            title: Text(_controladorCelular.text),
-                            subtitle: const Text('Celular'),
-                          )),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ConstrainedBox(
+                  constraints:
+                      const BoxConstraints(maxWidth: 400, minWidth: 200),
+                  child: Card(
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    child: ListTile(
+                      title: Text(_controladorCelular.text),
+                      subtitle: const Text('Celular'),
                     ),
-                    const SizedBox(height: 16),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        _editConta();
-                      },
-                      label: const Text('Editar seus dados'),
-                      icon: const Icon(Icons.edit),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        _deleteConta();
-                      },
-                      label: const Text('Excluir sua conta'),
-                      icon: const Icon(Icons.delete),
-                    )
-                  ],
-                )),
-          )),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: _editConta,
+                  label: const Text('Editar seus dados'),
+                  icon: const Icon(Icons.edit),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: _deleteConta,
+                  label: const Text('Excluir sua conta'),
+                  icon: const Icon(Icons.delete),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
       bottomNavigationBar: const BottomAppBarOrganizador(),
     );
   }

@@ -227,8 +227,7 @@ class _PerfilMonitoresState extends State<PerfilMonitores> {
       ),
       body: RefreshIndicator(
           onRefresh: _getSharedPreferences,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all((16.0)),
+          child: Center(
             child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
                 child: Column(
