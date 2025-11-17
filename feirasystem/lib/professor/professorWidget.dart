@@ -93,7 +93,7 @@ class _ProfessoresState extends State<Professores> {
                     } else {
                       final departamentos = snapshot.data!;
                       return DropdownButtonFormField<Departamento>(
-                        value: _departamentoSelecionado,
+                        initialValue: _departamentoSelecionado,
                         hint: const Text("Selecione um departamento"),
                         items: departamentos.map((Departamento departamento) {
                           return DropdownMenuItem<Departamento>(

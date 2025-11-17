@@ -107,7 +107,7 @@ class _SublocalidadesState extends State<Sublocalidades> {
                         } else {
                           final localidades = snapshot.data!;
                           return DropdownButtonFormField<Localidade>(
-                            value: _localidadeSelecionada,
+                            initialValue: _localidadeSelecionada,
                             hint: const Text("Selecione uma localidade"),
                             items: localidades.map((Localidade localidade) {
                               return DropdownMenuItem<Localidade>(

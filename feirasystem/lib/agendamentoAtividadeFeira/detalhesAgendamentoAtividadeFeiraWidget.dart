@@ -6,7 +6,6 @@ import 'package:feirasystem/atividade/atividadeService.dart';
 import 'package:feirasystem/monitorAtividade/monitorAtividadeModel.dart';
 import 'package:feirasystem/monitorAtividade/monitorAtividadeService.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class DetalhesAgendamentosAtividadeFeira extends StatefulWidget {
   final AgendamentoAtividadeFeira agendamento;

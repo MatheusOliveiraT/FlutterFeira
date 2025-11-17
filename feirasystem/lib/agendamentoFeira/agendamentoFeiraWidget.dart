@@ -137,7 +137,7 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
                         } else {
                           final feiras = snapshot.data!;
                           return DropdownButtonFormField<Feira>(
-                            value: _feiraSelecionada,
+                            initialValue: _feiraSelecionada,
                             hint: const Text("Selecione uma feira"),
                             items: feiras.map((Feira feira) {
                               return DropdownMenuItem<Feira>(
@@ -156,7 +156,7 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
                     ),
                     const SizedBox(height: 10),
                     DropdownButtonFormField<Turno>(
-                      value: _turnoSelecionado,
+                      initialValue: _turnoSelecionado,
                       hint: const Text("Selecione um turno"),
                       items: Turno.values.map((Turno turno) {
                         return DropdownMenuItem<Turno>(

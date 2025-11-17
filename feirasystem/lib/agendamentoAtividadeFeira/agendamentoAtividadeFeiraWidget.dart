@@ -124,7 +124,7 @@ class _AgendamentosAtividadeFeiraState
                           } else {
                             final atividades = snapshot.data!;
                             return DropdownButtonFormField<Atividade>(
-                              value: _atividadeSelecionada,
+                              initialValue: _atividadeSelecionada,
                               hint: const Text("Selecione uma atividade"),
                               items: atividades.map((Atividade atividade) {
                                 return DropdownMenuItem<Atividade>(
