@@ -241,7 +241,7 @@ class _AtividadesState extends State<Atividades> {
                         } else {
                           final feiras = snapshot.data!;
                           return DropdownButtonFormField<Feira>(
-                            value: _feiraSelecionada,
+                            initialValue: _feiraSelecionada,
                             hint: const Text("Selecione uma feira"),
                             items: feiras.map((Feira feira) {
                               return DropdownMenuItem<Feira>(
@@ -273,7 +273,7 @@ class _AtividadesState extends State<Atividades> {
                         } else {
                           final professores = snapshot.data!;
                           return DropdownButtonFormField<Professor>(
-                            value: _professorSelecionado,
+                            initialValue: _professorSelecionado,
                             hint: const Text("Selecione um professor"),
                             items: professores.map((Professor professor) {
                               return DropdownMenuItem<Professor>(
@@ -292,7 +292,7 @@ class _AtividadesState extends State<Atividades> {
                     ),
                     const SizedBox(height: 10),
                     DropdownButtonFormField<String>(
-                      value: _opcaoSelecionada,
+                      initialValue: _opcaoSelecionada,
                       items:
                           ['Selecione uma opção', 'Localidade', 'Sublocalidade']
                               .map((option) => DropdownMenuItem(
@@ -401,7 +401,7 @@ class _AtividadesState extends State<Atividades> {
               } else {
                 final localidades = snapshot.data!;
                 return DropdownButtonFormField<Localidade>(
-                  value: _localidadeSelecionada,
+                  initialValue: _localidadeSelecionada,
                   hint: const Text("Selecione uma localidade"),
                   items: localidades.map((Localidade localidade) {
                     return DropdownMenuItem<Localidade>(
@@ -435,7 +435,7 @@ class _AtividadesState extends State<Atividades> {
               } else {
                 final sublocalidades = snapshot.data!;
                 return DropdownButtonFormField<Sublocalidade>(
-                  value: _sublocalidadeSelecionada,
+                  initialValue: _sublocalidadeSelecionada,
                   hint: const Text("Selecione uma sublocalidade"),
                   items: sublocalidades.map((Sublocalidade sublocalidade) {
                     return DropdownMenuItem<Sublocalidade>(
@@ -467,7 +467,7 @@ class _AtividadesState extends State<Atividades> {
           ),
           const SizedBox(height: 10),
           DropdownButtonFormField<Status>(
-            value: _status,
+            initialValue: _status,
             hint: const Text("Selecione o status da atividade"),
             items: Status.values.map((Status status) {
               return DropdownMenuItem<Status>(
@@ -483,7 +483,7 @@ class _AtividadesState extends State<Atividades> {
           ),
           const SizedBox(height: 10),
           DropdownButtonFormField<Tipo>(
-            value: _tipo,
+            initialValue: _tipo,
             hint: const Text("Selecione o tipo da atividade"),
             items: Tipo.values.map((Tipo tipo) {
               return DropdownMenuItem<Tipo>(

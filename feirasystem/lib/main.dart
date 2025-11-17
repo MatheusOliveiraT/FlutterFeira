@@ -43,7 +43,7 @@ class ExpoUT extends StatelessWidget {
           centerTitle: true,
           titleTextStyle: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
-        bottomAppBarTheme: const BottomAppBarTheme(
+        bottomAppBarTheme: const BottomAppBarThemeData(
           elevation: 4.0,
           shadowColor: Color.fromARGB(255, 0, 0, 0),
           color: Color.fromARGB(255, 254, 204, 23),
@@ -51,7 +51,7 @@ class ExpoUT extends StatelessWidget {
         iconTheme: const IconThemeData(
           color: Color.fromARGB(255, 25, 42, 50),
         ),
-        cardTheme: const CardTheme(
+        cardTheme: const CardThemeData(
           color: Color.fromARGB(255, 255, 245, 218),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -115,7 +115,7 @@ class ExpoUT extends StatelessWidget {
           backgroundColor: Color.fromARGB(255, 236, 239, 243),
         ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        dialogTheme: const DialogTheme(
+        dialogTheme: const DialogThemeData(
             backgroundColor: Color.fromARGB(255, 236, 239, 243)),
       ),
       localizationsDelegates: const [
