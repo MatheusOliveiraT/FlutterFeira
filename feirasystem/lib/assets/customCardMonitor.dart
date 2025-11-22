@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 
 class CustomCardMonitor extends StatelessWidget {
   final String titulo;
-  final String hora;
+  final String duracao;
   final String local;
-  final num    vagas;
-  final String turno;
+  final String descricao;
+  final num quantidadeMonitores;
   final VoidCallback? onInscrever;
   final bool inscrito;
 
   const CustomCardMonitor({
     super.key,
     required this.titulo,
-    required this.hora,
+    required this.duracao,
     required this.local,
-    required this.vagas,
-    required this.turno,
+    required this.descricao,
+    required this.quantidadeMonitores,
     this.onInscrever,
     this.inscrito = false,
   });
@@ -39,10 +39,10 @@ class CustomCardMonitor extends StatelessWidget {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
-            Text('Hora: $hora', style: TextStyle(color: Colors.grey[700])),
+            Text('Duração: $duracao', style: TextStyle(color: Colors.grey[700])),
             Text('Local: $local', style: TextStyle(color: Colors.grey[700])),
-            Text('Vagas: $vagas', style: TextStyle(color: Colors.grey[700])),
-            Text('Turno: $turno', style: TextStyle(color: Colors.grey[700])),
+            Text('Descrição: $descricao', style: TextStyle(color: Colors.grey[700])),
+            Text('Quantidade de monitores: $quantidadeMonitores', style: TextStyle(color: Colors.grey[700])),
             const SizedBox(height: 16),
             Align(
               alignment: Alignment.centerRight,

@@ -2,6 +2,8 @@ import 'package:feirasystem/assets/bottomAppBarMonitor.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:feirasystem/assets/customCardMonitor.dart';
+import 'package:feirasystem/atividade/atividadeModel.dart';
+import 'package:feirasystem/assets/mockbuilder.dart';
 
 class HomePageMonitor extends StatefulWidget {
   const HomePageMonitor({super.key});
@@ -12,57 +14,39 @@ class HomePageMonitor extends StatefulWidget {
 
 class _HomePageMonitorState extends State<HomePageMonitor> {
   String nome = '';
-
-  final List<Map<String, dynamic>> atividades = [
-    {
-      'titulo': 'Show da Física',
-      'hora': '13:00 - 14:00',
-      'local': 'Bloco E - Anfiteatro',
-      'turno': 'Tarde',
-      'vagas': 4,
-      'inscrito': false,
-    },
-    {
-      'titulo': 'Degustação de Refrigerantes',
-      'hora': '10:00 - 12:00',
-      'local': 'Bloco C - Sala C103',
-      'turno': 'Manhã',
-      'vagas': 3,
-      'inscrito': false,
-    },
-    {
-      'titulo': 'Divertidamente Química',
-      'hora': '19:00 - 21:00',
-      'local': 'Bloco G - Sala G003',
-      'turno': 'Noite',
-      'vagas': 2,
-      'inscrito': false,
-    },
-  ];
+  List<Atividade> atividades = [];
 
   @override
   void initState() {
     super.initState();
     _loadNome();
+    _loadAtividadesMock();
   }
 
   Future<void> _loadNome() async {
     final prefs = await SharedPreferences.getInstance();
-    final nomeArmazenado = prefs.getString('nome') ?? '';
     setState(() {
-      nome = nomeArmazenado;
+      nome = prefs.getString('nome') ?? '';
     });
+  }
+
+  void _loadAtividadesMock() {
+    atividades = [
+      MockBuilder.retrieveAtividadeSublocalidade(),
+    ];
+
+    setState(() {});
   }
 
   void _inscreverAtividade(int index) {
     setState(() {
-      atividades[index]['inscrito'] = true;
+      atividades[index].inscrito = true;
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Inscrição feita em "${atividades[index]['titulo']}" com sucesso!',
+          'Inscrição feita em "${atividades[index].nome}" com sucesso!',
         ),
       ),
     );
@@ -80,43 +64,42 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Card(
-              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
               child: ListTile(
                 title: Text(
-                  nome.isEmpty
-                      ? 'Seja bem-vindo(a)'
-                      : 'Seja bem-vindo(a) $nome',
+                  nome.isEmpty ? 'Seja bem-vindo(a)' : 'Seja bem-vindo(a) $nome',
                   textAlign: TextAlign.center,
                 ),
               ),
             ),
+
             const SizedBox(height: 20),
+
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, 'monitor/atividades');
               },
               child: const Text('Minhas atividades'),
             ),
+
             const SizedBox(height: 20),
 
             const Center(
               child: Text(
                 'Atividades disponíveis',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
+
             ...List.generate(atividades.length, (index) {
-              final atividade = atividades[index];
+              final a = atividades[index];
+
               return CustomCardMonitor(
-                titulo: atividade['titulo'],
-                hora: atividade['hora'],
-                local: atividade['local'],
-                inscrito: atividade['inscrito'],
-                vagas: atividade['vagas'],
-                turno: atividade['turno'],
+                titulo: a.nome,
+                duracao: "${a.duracaoSecao} min",
+                local: "Localidade ${a.idLocalidade} - Sub ${a.idSublocalidade}",
+                descricao: a.descricao,
+                quantidadeMonitores: a.quantidadeMonitores,
+                inscrito: a.inscrito,
                 onInscrever: () => _inscreverAtividade(index),
               );
             }),
