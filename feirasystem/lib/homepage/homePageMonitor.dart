@@ -14,6 +14,7 @@ class HomePageMonitor extends StatefulWidget {
 
 class _HomePageMonitorState extends State<HomePageMonitor> {
   String nome = '';
+  String filtro = "";
   List<Atividade> atividades = [];
 
   @override
@@ -31,10 +32,7 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
   }
 
   void _loadAtividadesMock() {
-    atividades = [
-      MockBuilder.retrieveAtividadeSublocalidade(),
-    ];
-
+    atividades = MockBuilder.retrieveAtividades();
     setState(() {});
   }
 
@@ -54,6 +52,17 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
 
   @override
   Widget build(BuildContext context) {
+    final atividadesOrdenadas = [...atividades];
+
+    atividadesOrdenadas.sort((a, b) {
+      final aMatch = a.nome.toLowerCase().contains(filtro.toLowerCase());
+      final bMatch = b.nome.toLowerCase().contains(filtro.toLowerCase());
+
+      if (aMatch && !bMatch) return -1;
+      if (!aMatch && bMatch) return 1;
+      return 0;
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Feira de Profissões'),
@@ -90,17 +99,41 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
               ),
             ),
 
-            ...List.generate(atividades.length, (index) {
-              final a = atividades[index];
+            const SizedBox(height: 20),
+
+            TextField(
+              decoration: InputDecoration(
+                labelText: "Pesquisar atividade",
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onChanged: (value) {
+                setState(() => filtro = value);
+              },
+            ),
+
+            const SizedBox(height: 20),
+
+            ...List.generate(atividadesOrdenadas.length, (index) {
+              final atividade = atividadesOrdenadas[index];
+
+              final corresponde = atividade.nome
+                  .toLowerCase()
+                  .contains(filtro.toLowerCase());
 
               return CustomCardMonitor(
-                titulo: a.nome,
-                duracao: "${a.duracaoSecao} min",
-                local: "Localidade ${a.idLocalidade} - Sub ${a.idSublocalidade}",
-                descricao: a.descricao,
-                quantidadeMonitores: a.quantidadeMonitores,
-                inscrito: a.inscrito,
-                onInscrever: () => _inscreverAtividade(index),
+                titulo: atividade.nome,
+                duracao: "${atividade.duracaoSecao} min",
+                local:
+                    "Localidade ${atividade.idLocalidade}${atividade.idSublocalidade != null ? " - Sub ${atividade.idSublocalidade}" : ""}",
+                descricao: atividade.descricao,
+                quantidadeMonitores: atividade.quantidadeMonitores,
+                inscrito: atividade.inscrito,
+                desativado: !corresponde,
+                onInscrever: () =>
+                    _inscreverAtividade(atividades.indexOf(atividade)),
               );
             }),
           ],
