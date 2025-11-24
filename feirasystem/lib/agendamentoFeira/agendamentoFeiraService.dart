@@ -33,13 +33,26 @@ class AgendamentoFeiraService {
 
   Future<List<AgendamentoFeira>> getAgendamentos() async {
     try {
-      final response = await _dio.get('/agendamentoFeiras');
-      final List<dynamic> data = response.data;
-      return data.map((item) => AgendamentoFeira.fromJson(item)).toList();
+      // final response = await _dio.get('/agendamentoFeiras');
+      // final List<dynamic> data = response.data;
+      // return data.map((item) => AgendamentoFeira.fromJson(item)).toList();
+      final List<AgendamentoFeira> agendamentos = [
+          AgendamentoFeira(id: 1, idFeira: 1, data:DateTime.now(), turno: Turno.MANHA),
+          AgendamentoFeira(id: 2, idFeira: 1, data:DateTime.now(), turno: Turno.TARDE),
+          AgendamentoFeira(id: 3, idFeira: 1, data:DateTime.now(), turno: Turno.NOITE),
+          AgendamentoFeira(id: 4, idFeira: 2, data:DateTime.now(), turno: Turno.MANHA),
+          AgendamentoFeira(id: 5, idFeira: 2, data:DateTime.now(), turno: Turno.TARDE),
+          AgendamentoFeira(id: 6, idFeira: 2, data:DateTime.now(), turno: Turno.NOITE),
+      ];
+      return agendamentos;
     } catch (e) {
       throw 'Erro ao carregar agendamentos: ${e.toString()}';
     }
   }
+
+  // Future<List<AgendamentoFeira>> getAgendamentosFeira(int idFeira) async {
+    // TO DO
+  // }
 
   Future<AgendamentoFeira> getAgendamento(int id) async {
     try {

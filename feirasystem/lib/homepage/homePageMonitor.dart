@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:feirasystem/assets/customCardMonitor.dart';
 import 'package:feirasystem/atividade/atividadeModel.dart';
-import 'package:feirasystem/assets/mockbuilder.dart';
+import 'package:feirasystem/assets/mockBuilder.dart';
 
 class HomePageMonitor extends StatefulWidget {
   const HomePageMonitor({super.key});
