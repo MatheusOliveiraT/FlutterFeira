@@ -88,6 +88,7 @@ class Atividade {
   final Status? status;
   final int? idLocalidade;
   final int? idSublocalidade;
+  bool inscrito;
 
   Atividade({
     this.id,
@@ -103,6 +104,7 @@ class Atividade {
     this.status,
     this.idLocalidade,
     this.idSublocalidade,
+    this.inscrito = false,
   });
 
   factory Atividade.fromJson(Map<String, dynamic> json) {

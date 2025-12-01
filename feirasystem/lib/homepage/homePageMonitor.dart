@@ -2,6 +2,8 @@ import 'package:feirasystem/assets/bottomAppBarMonitor.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:feirasystem/assets/customCardMonitor.dart';
+import 'package:feirasystem/atividade/atividadeModel.dart';
+import 'package:feirasystem/assets/mockBuilder.dart';
 
 class HomePageMonitor extends StatefulWidget {
   const HomePageMonitor({super.key});
@@ -12,57 +14,37 @@ class HomePageMonitor extends StatefulWidget {
 
 class _HomePageMonitorState extends State<HomePageMonitor> {
   String nome = '';
-
-  final List<Map<String, dynamic>> atividades = [
-    {
-      'titulo': 'Show da Física',
-      'hora': '13:00 - 14:00',
-      'local': 'Bloco E - Anfiteatro',
-      'turno': 'Tarde',
-      'vagas': 4,
-      'inscrito': false,
-    },
-    {
-      'titulo': 'Degustação de Refrigerantes',
-      'hora': '10:00 - 12:00',
-      'local': 'Bloco C - Sala C103',
-      'turno': 'Manhã',
-      'vagas': 3,
-      'inscrito': false,
-    },
-    {
-      'titulo': 'Divertidamente Química',
-      'hora': '19:00 - 21:00',
-      'local': 'Bloco G - Sala G003',
-      'turno': 'Noite',
-      'vagas': 2,
-      'inscrito': false,
-    },
-  ];
+  String filtro = "";
+  List<Atividade> atividades = [];
 
   @override
   void initState() {
     super.initState();
     _loadNome();
+    _loadAtividadesMock();
   }
 
   Future<void> _loadNome() async {
     final prefs = await SharedPreferences.getInstance();
-    final nomeArmazenado = prefs.getString('nome') ?? '';
     setState(() {
-      nome = nomeArmazenado;
+      nome = prefs.getString('nome') ?? '';
     });
+  }
+
+  void _loadAtividadesMock() {
+    atividades = MockBuilder.retrieveAtividades();
+    setState(() {});
   }
 
   void _inscreverAtividade(int index) {
     setState(() {
-      atividades[index]['inscrito'] = true;
+      atividades[index].inscrito = true;
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Inscrição feita em "${atividades[index]['titulo']}" com sucesso!',
+          'Inscrição feita em "${atividades[index].nome}" com sucesso!',
         ),
       ),
     );
@@ -70,6 +52,17 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
 
   @override
   Widget build(BuildContext context) {
+    final atividadesOrdenadas = [...atividades];
+
+    atividadesOrdenadas.sort((a, b) {
+      final aMatch = a.nome.toLowerCase().contains(filtro.toLowerCase());
+      final bMatch = b.nome.toLowerCase().contains(filtro.toLowerCase());
+
+      if (aMatch && !bMatch) return -1;
+      if (!aMatch && bMatch) return 1;
+      return 0;
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Feira de Profissões'),
@@ -80,44 +73,67 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Card(
-              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
               child: ListTile(
                 title: Text(
-                  nome.isEmpty
-                      ? 'Seja bem-vindo(a)'
-                      : 'Seja bem-vindo(a) $nome',
+                  nome.isEmpty ? 'Seja bem-vindo(a)' : 'Seja bem-vindo(a) $nome',
                   textAlign: TextAlign.center,
                 ),
               ),
             ),
+
             const SizedBox(height: 20),
+
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, 'monitor/atividades');
               },
               child: const Text('Minhas atividades'),
             ),
+
             const SizedBox(height: 20),
 
             const Center(
               child: Text(
                 'Atividades disponíveis',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-            ...List.generate(atividades.length, (index) {
-              final atividade = atividades[index];
+
+            const SizedBox(height: 20),
+
+            TextField(
+              decoration: InputDecoration(
+                labelText: "Pesquisar atividade",
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onChanged: (value) {
+                setState(() => filtro = value);
+              },
+            ),
+
+            const SizedBox(height: 20),
+
+            ...List.generate(atividadesOrdenadas.length, (index) {
+              final atividade = atividadesOrdenadas[index];
+
+              final corresponde = atividade.nome
+                  .toLowerCase()
+                  .contains(filtro.toLowerCase());
+
               return CustomCardMonitor(
-                titulo: atividade['titulo'],
-                hora: atividade['hora'],
-                local: atividade['local'],
-                inscrito: atividade['inscrito'],
-                vagas: atividade['vagas'],
-                turno: atividade['turno'],
-                onInscrever: () => _inscreverAtividade(index),
+                titulo: atividade.nome,
+                duracao: "${atividade.duracaoSecao} min",
+                local:
+                    "Localidade ${atividade.idLocalidade}${atividade.idSublocalidade != null ? " - Sub ${atividade.idSublocalidade}" : ""}",
+                descricao: atividade.descricao,
+                quantidadeMonitores: atividade.quantidadeMonitores,
+                inscrito: atividade.inscrito,
+                desativado: !corresponde,
+                onInscrever: () =>
+                    _inscreverAtividade(atividades.indexOf(atividade)),
               );
             }),
           ],

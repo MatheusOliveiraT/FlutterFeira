@@ -1,10 +1,10 @@
 import 'package:feirasystem/agendamentoAtividadeFeira/agendamentoAtividadeFeiraModel.dart';
-import 'package:feirasystem/agendamentoAtividadeFeira/agendamentoAtividadeFeiraService.dart';
+// import 'package:feirasystem/agendamentoAtividadeFeira/agendamentoAtividadeFeiraService.dart';
 import 'package:feirasystem/assets/bottomAppBarOrganizador.dart';
 import 'package:feirasystem/atividade/atividadeModel.dart';
-import 'package:feirasystem/atividade/atividadeService.dart';
+// import 'package:feirasystem/atividade/atividadeService.dart';
 import 'package:feirasystem/monitorAtividade/monitorAtividadeModel.dart';
-import 'package:feirasystem/monitorAtividade/monitorAtividadeService.dart';
+// import 'package:feirasystem/monitorAtividade/monitorAtividadeService.dart';
 import 'package:flutter/material.dart';
 
 class DetalhesAgendamentosAtividadeFeira extends StatefulWidget {
@@ -21,11 +21,11 @@ class DetalhesAgendamentosAtividadeFeira extends StatefulWidget {
 
 class _DetalhesAgendamentosAtividadeFeiraState
     extends State<DetalhesAgendamentosAtividadeFeira> {
-  final AgendamentoAtividadeFeiraService _agendamentoAtividadeFeiraService =
-      AgendamentoAtividadeFeiraService();
-  final AtividadeService _atividadeService = AtividadeService();
-  final MonitorAtividadeService _monitorAtividadeService =
-      MonitorAtividadeService();
+  // final AgendamentoAtividadeFeiraService _agendamentoAtividadeFeiraService =
+  //     AgendamentoAtividadeFeiraService();
+  // final AtividadeService _atividadeService = AtividadeService();
+  // final MonitorAtividadeService _monitorAtividadeService =
+  //     MonitorAtividadeService();
   // pessoaService
 
   late final AgendamentoAtividadeFeira agendamento;

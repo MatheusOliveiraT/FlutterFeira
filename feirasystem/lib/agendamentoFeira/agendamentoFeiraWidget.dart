@@ -1,8 +1,9 @@
 import 'package:feirasystem/agendamentoFeira/agendamentoFeiraModel.dart';
 import 'package:feirasystem/agendamentoFeira/agendamentoFeiraService.dart';
 import 'package:feirasystem/assets/bottomAppBarOrganizador.dart';
+import 'package:feirasystem/assets/mockBuilder.dart';
 import 'package:feirasystem/feira/feiraModel.dart';
-import 'package:feirasystem/feira/feiraService.dart';
+// import 'package:feirasystem/feira/feiraService.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -15,7 +16,7 @@ class AgendamentosFeira extends StatefulWidget {
 class _AgendamentosFeiraState extends State<AgendamentosFeira> {
   final AgendamentoFeiraService _agendamentoFeiraService =
       AgendamentoFeiraService();
-  final FeiraService _feiraService = FeiraService();
+  // final FeiraService _feiraService = FeiraService();
   late Future<List<Feira>> _feiras;
   late Future<List<AgendamentoFeira>> _agendamentosFeira;
 
@@ -26,6 +27,8 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
   @override
   void initState() {
     super.initState();
+    _feiras = Future.value(MockBuilder.retrieveFeiras());
+    _agendamentosFeira = Future.value(MockBuilder.retrieveAgendamentosFeira());
     _atualizarFeiras();
     _atualizarAgendamentosFeira();
   }
@@ -85,18 +88,20 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
 
   Future<void> _atualizarAgendamentosFeira() async {
     setState(() {
-      _agendamentosFeira = _agendamentoFeiraService.getAgendamentos();
+      _agendamentosFeira = MockBuilder.retrieveAgendamentosFeira();
+      // _agendamentosFeira = _agendamentoFeiraService.getAgendamentos();
     });
   }
 
   Future<void> _atualizarFeiras() async {
     setState(() {
-      _feiras = _feiraService.getFeiras();
+      _feiras = MockBuilder.retrieveFeiras();
+      // _feiras = _feiraService.getFeiras();
     });
   }
 
   Future<void> _mostrarFormAgendamentoFeira(
-      {AgendamentoFeira? agendamentoFeira}) async {
+      {AgendamentoFeira? agendamentoFeira, int? idFeira}) async {
     if (agendamentoFeira != null) {
       _controladorData.text =
           DateFormat('dd/MM/yyyy').format(agendamentoFeira.data);
@@ -105,6 +110,9 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
             lista.firstWhere((feira) => feira.id == agendamentoFeira.idFeira);
       });
       _turnoSelecionado = agendamentoFeira.turno;
+    } else if (agendamentoFeira == null && idFeira != null) {
+      final listaFeiras = await _feiras;
+      _feiraSelecionada = listaFeiras.firstWhere((f) => f.id == idFeira);
     } else {
       _controladorData.clear();
       _feiraSelecionada = null;
@@ -264,6 +272,8 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
 
   @override
   Widget build(BuildContext context) {
+    final int? idFeiraFiltrada =
+        ModalRoute.of(context)!.settings.arguments as int?;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Agendamento de feira'),
@@ -287,12 +297,15 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
             }
 
             final List<AgendamentoFeira> agendamentosFeira = snapshot.data![0];
+            final agendamentosFiltrados = idFeiraFiltrada == null
+              ? agendamentosFeira
+              : agendamentosFeira.where((a) => a.idFeira == idFeiraFiltrada).toList();
             final List<Feira> feiras = snapshot.data![1];
 
             return ListView.builder(
-              itemCount: agendamentosFeira.length,
+              itemCount: agendamentosFiltrados.length,
               itemBuilder: (context, index) {
-                final agendamentoFeira = agendamentosFeira[index];
+                final agendamentoFeira = agendamentosFiltrados[index];
                 return Dismissible(
                   key: Key(agendamentoFeira.id.toString()),
                   direction: DismissDirection.endToStart,
@@ -334,7 +347,7 @@ class _AgendamentosFeiraState extends State<AgendamentosFeira> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _mostrarFormAgendamentoFeira(),
+        onPressed: () => _mostrarFormAgendamentoFeira(idFeira: idFeiraFiltrada),
         child: const Icon(Icons.add),
       ),
       bottomNavigationBar: const BottomAppBarOrganizador(),

@@ -1,5 +1,6 @@
 import 'package:feirasystem/assets/bottomAppBarOrganizador.dart';
 import 'package:feirasystem/assets/customSnackBar.dart';
+import 'package:feirasystem/assets/mockBuilder.dart';
 import 'package:feirasystem/feira/feiraService.dart';
 import 'package:flutter/material.dart';
 import 'feiraModel.dart';
@@ -19,6 +20,7 @@ class _FeirasState extends State<Feiras> {
   @override
   void initState() {
     super.initState();
+    _feiras = Future.value(MockBuilder.retrieveFeiras());
     _atualizarFeiras();
   }
 
@@ -40,7 +42,8 @@ class _FeirasState extends State<Feiras> {
 
   Future<void> _atualizarFeiras() async {
     setState(() {
-      _feiras = _feiraService.getFeiras();
+      _feiras = MockBuilder.retrieveFeiras();
+      // _feiras = _feiraService.getFeiras();
     });
   }
 
@@ -167,6 +170,9 @@ class _FeirasState extends State<Feiras> {
                     onDismissed: (_) => _deleteFeira(feira),
                     child: ListTile(
                       title: Text(feira.nome),
+                      onTap: () {
+                        Navigator.pushNamed(context, "cadastro/agendamentofeira", arguments: feira.id,);
+                      },
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
