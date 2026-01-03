@@ -24,6 +24,8 @@ class CustomCardMonitor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool botaoDesabilitado = inscrito || desativado;
+
     return Opacity(
       opacity: desativado ? 0.4 : 1,
       child: IgnorePointer(
@@ -52,9 +54,11 @@ class CustomCardMonitor extends StatelessWidget {
                 Align(
                   alignment: Alignment.centerRight,
                   child: ElevatedButton.icon(
-                    onPressed: inscrito ? null : onInscrever,
+                    onPressed: botaoDesabilitado ? null : onInscrever,
                     icon: Icon(
-                      inscrito ? Icons.check_circle : Icons.check_circle_outline,
+                      inscrito
+                          ? Icons.check_circle
+                          : Icons.check_circle_outline,
                     ),
                     label: Text(inscrito ? 'Inscrito' : 'Inscrever-se'),
                   ),
