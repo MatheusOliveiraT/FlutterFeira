@@ -2,7 +2,10 @@
 
 
 import 'package:feirasystem/assets/mockBuilder.dart'; 
-import 'package:feirasystem/atividade/atividadeModel.dart'; 
+import 'package:feirasystem/atividade/atividadeModel.dart';
+
+import 'package:feirasystem/assets/customSnackBar.dart'; 
+
 import 'monitorAtividadeModel.dart';
 import 'monitorAtividadeService.dart';
 import 'ponto_atividade_dto.dart';
@@ -33,39 +36,32 @@ class _MonitorAtividadesState extends State<MonitorAtividades> {
     _monitorAtividades = _inicializarDados();
   }
   
-
-  //  INTEGRAÇÃO COM O MOCKBUILDER
   Future<List<MonitorAtividade>> _inicializarDados() async {
     // 1. Define um ID fixo (já que não temos login)
     _idMonitor = 123; 
 
-    // 2. Busca a lista de Atividades do SEU MOCKBUILDER
+  
     print("Carregando dados do MockBuilder...");
     List<Atividade> atividadesDoMock = MockBuilder.retrieveAtividades();
 
     
-    // A tela precisa de 'MonitorAtividade', mas o mock traz 'Atividade'.
-    // transforma um no outro.
     List<MonitorAtividade> listaConvertida = atividadesDoMock.map((atividade) {
       return MonitorAtividade(
-        id: atividade.id, // Usa o ID da atividade
+        id: atividade.id,
         estevePresente: false,
         idMonitor: _idMonitor,
-        idAgendamentoAtividadeFeira: atividade.id!, // Conecta os IDs
+        idAgendamentoAtividadeFeira: atividade.id!,
         
-        // Mapeando os campos visuais
+        
         nomeAtividade: atividade.nome ?? "Atividade sem nome",
-        turno: "Integral", // O Mock não tem turno, definimos um padrão
-        nomeDaFeira: "Feira de Profissões", // O Mock não tem feira, definimos um padrão
+        turno: "Integral", 
+        nomeDaFeira: "Feira de Profissões",
       );
     }).toList();
 
-    // Simula um pequeno delay para parecer real
     await Future.delayed(const Duration(milliseconds: 500));
-
     return listaConvertida;
   }
-  
 
   Future<void> _handlePonto(MonitorAtividade atividade) async {
     try {
@@ -73,10 +69,21 @@ class _MonitorAtividadesState extends State<MonitorAtividades> {
         atividade: atividade, 
       );
       final String acao = registro.novoStatus;
+      
       setState(() {}); 
-      _mostrarSnackBar('Status da atividade atualizado para: $acao');
+      
+      
+      _mostrarSnackBar(
+        'Status atualizado para: $acao', 
+        isError: false
+      );
+
     } catch (e) {
-      _mostrarSnackBar('Erro ao registrar ponto: $e');
+      
+      _mostrarSnackBar(
+        'Erro ao registrar ponto: $e', 
+        isError: true
+      );
     }
   }
   
@@ -103,13 +110,16 @@ class _MonitorAtividadesState extends State<MonitorAtividades> {
       setState(() {
         _monitorAtividades = _inicializarDados();
       });
-      _mostrarSnackBar('Inscrição cancelada com sucesso.');
+      
+      _mostrarSnackBar('Inscrição cancelada com sucesso.', isError: false);
     }
   }
 
-  void _mostrarSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), duration: const Duration(seconds: 2)),
+  void _mostrarSnackBar(String message, {bool isError = false}) {
+    showCustomSnackBar(
+      context,
+      message,
+      tipo: isError ? 'erro' : 'sucesso',
     );
   }
 
@@ -164,7 +174,6 @@ class _MonitorAtividadesState extends State<MonitorAtividades> {
                   onDismissed: (_) =>
                       _cancelarMonitorAtividade(monitorAtividade),
                   child: ListTile(
-                    // Agora deve mostrar "Atividade de Teste" e "Atividade de Teste Localidade"
                     title: Text(monitorAtividade.nomeAtividade), 
                     subtitle: Text(
                         'Status: ${isCheckedIn ? 'Em Andamento' : 'Pendente'}'), 
