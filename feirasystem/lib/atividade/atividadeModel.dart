@@ -1,93 +1,107 @@
+// ========= ENUMS =========
+
 enum TipoAtividade { SUBLOCALIDADE, LOCALIDADE }
 
 extension TipoAtividadeExtensao on TipoAtividade {
-  String get descricao {
-    switch (this) {
-      case TipoAtividade.SUBLOCALIDADE:
-        return "Sublocalidade";
-      case TipoAtividade.LOCALIDADE:
-        return "Localidade";
+  static TipoAtividade fromString(String value) {
+    switch (value.toUpperCase()) {
+      case 'SUBLOCALIDADE':
+        return TipoAtividade.SUBLOCALIDADE;
+      case 'LOCALIDADE':
+        return TipoAtividade.LOCALIDADE;
+      default:
+        throw ArgumentError('TipoAtividade inválido: $value');
     }
   }
 
-  static TipoAtividade fromString(String tipoAtividade) {
-    switch (tipoAtividade.toLowerCase()) {
-      case 'sublocalidade':
-        return TipoAtividade.SUBLOCALIDADE;
-      case 'localidade':
-        return TipoAtividade.LOCALIDADE;
-      default:
-        throw ArgumentError('Tipo atividade inválido');
+  String get descricao {
+    switch (this) {
+      case TipoAtividade.SUBLOCALIDADE:
+        return 'SUBLOCALIDADE';
+      case TipoAtividade.LOCALIDADE:
+        return 'LOCALIDADE';
     }
   }
 }
+
+// -------------------------
 
 enum Tipo { SECAO, CONTINUO }
 
 extension TipoExtensao on Tipo {
-  String get descricao {
-    switch (this) {
-      case Tipo.SECAO:
-        return "Seção";
-      case Tipo.CONTINUO:
-        return "Contínuo";
+  static Tipo fromString(String value) {
+    switch (value.toUpperCase()) {
+      case 'SECAO':
+        return Tipo.SECAO;
+      case 'CONTINUO':
+        return Tipo.CONTINUO;
+      default:
+        throw ArgumentError('Tipo inválido: $value');
     }
   }
 
-  static Tipo fromString(String tipo) {
-    switch (tipo.toLowerCase()) {
-      case 'seção':
-        return Tipo.SECAO;
-      case 'contínuo':
-        return Tipo.CONTINUO;
-      default:
-        throw ArgumentError('Tipo inválido');
+  String get descricao {
+    switch (this) {
+      case Tipo.SECAO:
+        return 'SECAO';
+      case Tipo.CONTINUO:
+        return 'CONTINUO';
     }
   }
 }
+
+// -------------------------
 
 enum Status { OCUPADA, OCIOSA, INATIVA }
 
 extension StatusExtensao on Status {
-  String get descricao {
-    switch (this) {
-      case Status.OCUPADA:
-        return "Ocupada";
-      case Status.OCIOSA:
-        return "Ociosa";
-      case Status.INATIVA:
-        return "Inativa";
+  static Status fromString(String value) {
+    switch (value.toUpperCase()) {
+      case 'OCUPADA':
+        return Status.OCUPADA;
+      case 'OCIOSA':
+        return Status.OCIOSA;
+      case 'INATIVA':
+        return Status.INATIVA;
+      default:
+        throw ArgumentError('Status inválido: $value');
     }
   }
 
-  static Status fromString(String status) {
-    switch (status.toLowerCase()) {
-      case 'ocupada':
-        return Status.OCUPADA;
-      case 'ociosa':
-        return Status.OCIOSA;
-      case 'inativa':
-        return Status.INATIVA;
-      default:
-        throw ArgumentError('Status inválido');
+  String get descricao {
+    switch (this) {
+      case Status.OCUPADA:
+        return 'OCUPADA';
+      case Status.OCIOSA:
+        return 'OCIOSA';
+      case Status.INATIVA:
+        return 'INATIVA';
     }
   }
 }
+
+// ========= MODEL =========
 
 class Atividade {
   final int? id;
   final String nome;
   final String descricao;
   final int quantidadeMonitores;
-  final int idFeira;
-  final int idProfessor;
+
   final TipoAtividade tipoAtividade;
+
   final Tipo? tipo;
+  final Status? status;
+
   final int? duracaoSecao;
   final int? capacidadeVisitantes;
-  final Status? status;
+
+  final int idFeira;
+  final int idProfessor;
+
   final int? idLocalidade;
   final int? idSublocalidade;
+
   bool inscrito;
 
   Atividade({
@@ -95,13 +109,13 @@ class Atividade {
     required this.nome,
     required this.descricao,
     required this.quantidadeMonitores,
+    required this.tipoAtividade,
     required this.idFeira,
     required this.idProfessor,
-    required this.tipoAtividade,
     this.tipo,
+    this.status,
     this.duracaoSecao,
     this.capacidadeVisitantes,
-    this.status,
     this.idLocalidade,
     this.idSublocalidade,
     this.inscrito = false,
@@ -109,46 +123,26 @@ class Atividade {
 
   factory Atividade.fromJson(Map<String, dynamic> json) {
     return Atividade(
-      id: int.parse(json['id'].toString()),
+      id: json['id'],
       nome: json['nome'],
       descricao: json['descricao'],
-      quantidadeMonitores: int.parse(json['quantidadeMonitores'].toString()),
-      tipoAtividade: TipoAtividadeExtensao.fromString(json['tipoAtividade']),
-      duracaoSecao: int.parse(json['duracao'].toString()),
-      capacidadeVisitantes: int.parse(json['capacidadeVisitante'].toString()),
-      idLocalidade: int.parse(json['idLocalidade'].toString()),
-      idSublocalidade: int.parse(json['idSublocalidade'].toString()),
-      idProfessor: int.parse(json['idProfessor'].toString()),
-      idFeira: int.parse(json['idFeira'].toString()),
-      status: StatusExtensao.fromString(json['status']),
-      tipo: TipoExtensao.fromString(json['tipo']),
+      quantidadeMonitores:
+          json['quantidadeMonitores'] ?? json['qtdMonitores'],
+      duracaoSecao: json['duracaoSecao'] ?? 0,
+      capacidadeVisitantes: json['capacidadeVisitantes'] ?? 0,
+      tipoAtividade:
+          TipoAtividadeExtensao.fromString(json['tipoAtividade']),
+      tipo: json['tipo'] != null
+          ? TipoExtensao.fromString(json['tipo'])
+          : Tipo.SECAO,
+      status: json['status'] != null
+          ? StatusExtensao.fromString(json['status'])
+          : Status.OCIOSA,
+      idFeira: json['idFeira'] ?? json['feira'],
+      idProfessor: json['idProfessor'] ?? json['professor'],
+      idLocalidade: json['idLocalidade'] ?? json['localidade'],
+      idSublocalidade: json['idSublocalidade'] ?? json['sublocalidade'],
     );
   }
 
-  Map<String, dynamic> toJson() {
-    if (tipoAtividade == TipoAtividade.LOCALIDADE) {
-      return {
-        'nome': nome,
-        'descricao': descricao,
-        'quantidadeMontiroes': quantidadeMonitores,
-        'idLocalidade': idLocalidade,
-        'idProfessor': idProfessor,
-        'idFeira': idFeira,
-        'tipoAtividade': tipoAtividade.descricao,
-      };
-    }
-    return {
-      'nome': nome,
-      'descricao': descricao,
-      'quantidadeMontiroes': quantidadeMonitores,
-      'idProfessor': idProfessor,
-      'idFeira': idFeira,
-      'idSublocalidade': idSublocalidade,
-      'duracao': duracaoSecao,
-      'capacidadeVisitante': capacidadeVisitantes,
-      'status': status!.descricao,
-      'tipo': tipo!.descricao,
-      'tipoAtividade': tipoAtividade.descricao,
-    };
-  }
 }
