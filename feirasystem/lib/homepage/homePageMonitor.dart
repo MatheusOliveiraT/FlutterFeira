@@ -20,6 +20,9 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
   int? filtroLocalidade;
 
   List<Atividade> atividades = [];
+  List<int> duracoesDisponiveis = [];
+  List<int> localidadesDisponiveis = [];
+
   bool carregando = true;
 
   final AtividadeService _service = AtividadeService();
@@ -42,8 +45,25 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
     try {
       final lista = await _service.getAtividades();
 
+      final duracoes = lista
+        .map((a) => a.duracaoSecao)
+        .whereType<int>() 
+        .toSet()
+        .toList()
+      ..sort();
+
+      final localidades = lista
+          .map((a) => a.idLocalidade)
+          .whereType<int>()
+          .toSet()
+          .toList()
+        ..sort();
+
+
       setState(() {
         atividades = lista;
+        duracoesDisponiveis = duracoes;
+        localidadesDisponiveis = localidades;
         carregando = false;
       });
     } catch (e, s) {
@@ -153,10 +173,17 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
                       labelText: 'Duração',
                       border: OutlineInputBorder(),
                     ),
-                    items: const [
-                      DropdownMenuItem(value: null, child: Text('Todas')),
-                      DropdownMenuItem(value: 45, child: Text('45 min')),
-                      DropdownMenuItem(value: 60, child: Text('60 min')),
+                    items: [
+                      const DropdownMenuItem<int?>(
+                        value: null,
+                        child: Text('Todas'),
+                      ),
+                      ...duracoesDisponiveis.map(
+                        (duracao) => DropdownMenuItem<int?>(
+                          value: duracao,
+                          child: Text('$duracao min'),
+                        ),
+                      ),
                     ],
                     onChanged: (value) {
                       setState(() => filtroDuracao = value);
@@ -171,10 +198,17 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
                       labelText: 'Localidade',
                       border: OutlineInputBorder(),
                     ),
-                    items: const [
-                      DropdownMenuItem(value: null, child: Text('Todas')),
-                      DropdownMenuItem(value: 1, child: Text('Localidade 1')),
-                      DropdownMenuItem(value: 2, child: Text('Localidade 2')),
+                    items: [
+                      const DropdownMenuItem<int?>(
+                        value: null,
+                        child: Text('Todas'),
+                      ),
+                      ...localidadesDisponiveis.map(
+                        (localidade) => DropdownMenuItem<int?>(
+                          value: localidade,
+                          child: Text('Localidade $localidade'),
+                        ),
+                      ),
                     ],
                     onChanged: (value) {
                       setState(() => filtroLocalidade = value);
@@ -185,7 +219,6 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
             ),
 
             const SizedBox(height: 20),
-            const SizedBox(height: 10),
 
             Align(
               alignment: Alignment.centerRight,
