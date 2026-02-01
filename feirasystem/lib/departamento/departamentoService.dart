@@ -34,12 +34,25 @@ class DepartamentoService {
   Future<List<Departamento>> getDepartamentos() async {
     try {
       final response = await _dio.get('/departamentos');
-      final List<dynamic> data = response.data;
-      return data.map((item) => Departamento.fromJson(item)).toList();
+
+      final data = response.data;
+
+      if (data is Map && data['departamentos'] != null) {
+        return (data['departamentos'] as List)
+            .map((e) => Departamento.fromJson(e))
+            .toList();
+      }
+
+      if (data is List) {
+        return data.map((e) => Departamento.fromJson(e)).toList();
+      }
+
+      return [];
     } catch (e) {
-      throw 'Erro ao carregar departamentos: ${e.toString()}';
+      throw 'Erro ao carregar departamentos: $e';
     }
   }
+
 
   Future<Departamento> getDepartamento(int id) async {
     try {
@@ -50,14 +63,19 @@ class DepartamentoService {
     }
   }
 
-  Future<Departamento> createDepartamento(Departamento departamento) async {
+  Future<void> createDepartamento(Departamento departamento) async {
     try {
-      final response = await _dio.post('/departamentos', data: {
-        'nome': departamento.nome,
-      });
-      return Departamento.fromJson(response.data);
+      final response = await _dio.post(
+        '/departamentos',
+        data: {
+          'nome': departamento.nome,
+        },
+      );
+
+      print('STATUS: ${response.statusCode}');
+      print('DATA: ${response.data}');
     } catch (e) {
-      throw 'Erro ao criar departamento: ${e.toString()}';
+      throw 'Erro ao criar departamento: $e';
     }
   }
 
