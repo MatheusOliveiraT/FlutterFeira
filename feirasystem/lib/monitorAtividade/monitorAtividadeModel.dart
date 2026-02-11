@@ -1,48 +1,51 @@
-// lib/monitorAtividade/monitorAtividadeModel.dart
-
 class MonitorAtividade {
-  final int? id;
+  final int id;
   final bool estevePresente;
   final int idMonitor;
   final int idAgendamentoAtividadeFeira;
-
+  final int idAtividadeReal; // NOVO: Precisamos do ID da sala para alterá-la
+  final String statusAtividade; // NOVO: "OCIOSA" ou "OCUPADA"
   final String nomeAtividade;
   final String turno;
   final String nomeDaFeira;
-  
+  final String? horaEntrada;
+  final String? horaSaida;
 
   MonitorAtividade({
-    this.id,
+    required this.id,
     required this.estevePresente,
     required this.idMonitor,
     required this.idAgendamentoAtividadeFeira,
+    required this.idAtividadeReal,
+    required this.statusAtividade,
     required this.nomeAtividade,
     required this.turno,
     required this.nomeDaFeira,
+    this.horaEntrada,
+    this.horaSaida,
   });
 
   factory MonitorAtividade.fromJson(Map<String, dynamic> json) {
-    return MonitorAtividade(
-      id: int.parse(json['id'].toString()),
-      estevePresente: bool.parse(json['estevePresente'].toString()),
-      idMonitor: int.parse(json['idMonitor'].toString()),
-      idAgendamentoAtividadeFeira:
-          int.parse(json['idAgendamentoAtividadeFeira'].toString()),
-      
-      nomeAtividade: json['nomeAtividade'] ?? 'Atividade Sem Nome',
-      turno: json['turno'] ?? 'Turno Padrão',
-      nomeDaFeira: json['nomeDaFeira'] ?? 'Feira Padrão',
-    );
-  }
+    var agendamento = json['agendamentoAtividadeFeira'] ?? {};
+    var atividade = agendamento['atividade'] ?? {};
+    var feira = agendamento['feira'] ?? {};
+    var pessoa = json['pessoa'] ?? {};
 
-  Map<String, dynamic> toJson() {
-    return {
-      'estevePresente': estevePresente,
-      'idMonitor': idMonitor,
-      'idAgendamentoAtividadeFeira': idAgendamentoAtividadeFeira,
-      'nomeAtividade': nomeAtividade,
-      'turno': turno,
-      'nomeDaFeira': nomeDaFeira,
-    };
+    return MonitorAtividade(
+      id: json['id'],
+      estevePresente: json['horaEntrada'] != null,
+      idMonitor: pessoa['id'] ?? 0,
+      idAgendamentoAtividadeFeira: agendamento['id'] ?? 0,
+      
+      
+      idAtividadeReal: atividade['id'] ?? 0, 
+      statusAtividade: atividade['status'] ?? "OCIOSA", 
+      
+      nomeAtividade: atividade['nome'] ?? "Carregando...",
+      turno: agendamento['turno'] ?? "Não definido",
+      nomeDaFeira: feira['nome'] ?? "Feira",
+      horaEntrada: json['horaEntrada'],
+      horaSaida: json['horaSaida'],
+    );
   }
 }
