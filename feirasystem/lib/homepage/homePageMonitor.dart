@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:feirasystem/assets/customCardMonitor.dart';
 import 'package:feirasystem/atividade/atividadeModel.dart';
-import 'package:feirasystem/assets/mockBuilder.dart';
+import 'package:feirasystem/atividade/atividadeService.dart';
 
 class HomePageMonitor extends StatefulWidget {
   const HomePageMonitor({super.key});
@@ -20,12 +20,18 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
   int? filtroLocalidade;
 
   List<Atividade> atividades = [];
+  List<int> duracoesDisponiveis = [];
+  List<int> localidadesDisponiveis = [];
+
+  bool carregando = true;
+
+  final AtividadeService _service = AtividadeService();
 
   @override
   void initState() {
     super.initState();
     _loadNome();
-    _loadAtividadesMock();
+    _loadAtividadesBackend();
   }
 
   Future<void> _loadNome() async {
@@ -35,9 +41,41 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
     });
   }
 
-  void _loadAtividadesMock() {
-    atividades = MockBuilder.retrieveAtividades();
-    setState(() {});
+  Future<void> _loadAtividadesBackend() async {
+    try {
+      final lista = await _service.getAtividades();
+
+      final duracoes = lista
+        .map((a) => a.duracaoSecao)
+        .whereType<int>() 
+        .toSet()
+        .toList()
+      ..sort();
+
+      final localidades = lista
+          .map((a) => a.idLocalidade)
+          .whereType<int>()
+          .toSet()
+          .toList()
+        ..sort();
+
+
+      setState(() {
+        atividades = lista;
+        duracoesDisponiveis = duracoes;
+        localidadesDisponiveis = localidades;
+        carregando = false;
+      });
+    } catch (e, s) {
+      debugPrint('Erro ao carregar atividades: $e');
+      debugPrintStack(stackTrace: s);
+
+      setState(() => carregando = false);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Erro ao carregar atividades')),
+      );
+    }
   }
 
   bool correspondeFiltros(Atividade atividade) {
@@ -75,21 +113,24 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
 
   @override
   Widget build(BuildContext context) {
-    final atividadesOrdenadas = [...atividades];
+    if (carregando) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
-    atividadesOrdenadas.sort((a, b) {
-      final aValida = correspondeFiltros(a);
-      final bValida = correspondeFiltros(b);
+    final atividadesOrdenadas = [...atividades]
+      ..sort((a, b) {
+        final aValida = correspondeFiltros(a);
+        final bValida = correspondeFiltros(b);
 
-      if (aValida && !bValida) return -1;
-      if (!aValida && bValida) return 1;
-      return 0;
-    });
+        if (aValida && !bValida) return -1;
+        if (!aValida && bValida) return 1;
+        return 0;
+      });
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Feira de Profissões'),
-      ),
+      appBar: AppBar(title: const Text('Feira de Profissões')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -103,24 +144,6 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
                       : 'Seja bem-vindo(a) $nome',
                   textAlign: TextAlign.center,
                 ),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, 'monitor/atividades');
-              },
-              child: const Text('Minhas atividades'),
-            ),
-
-            const SizedBox(height: 20),
-
-            const Center(
-              child: Text(
-                'Atividades disponíveis',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
 
@@ -144,16 +167,23 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
             Row(
               children: [
                 Expanded(
-                  child: DropdownButtonFormField<int>(
+                  child: DropdownButtonFormField<int?>(
                     value: filtroDuracao,
                     decoration: const InputDecoration(
                       labelText: 'Duração',
                       border: OutlineInputBorder(),
                     ),
-                    items: const [
-                      DropdownMenuItem(value: null, child: Text('Todas')),
-                      DropdownMenuItem(value: 45, child: Text('45 min')),
-                      DropdownMenuItem(value: 60, child: Text('60 min')),
+                    items: [
+                      const DropdownMenuItem<int?>(
+                        value: null,
+                        child: Text('Todas'),
+                      ),
+                      ...duracoesDisponiveis.map(
+                        (duracao) => DropdownMenuItem<int?>(
+                          value: duracao,
+                          child: Text('$duracao min'),
+                        ),
+                      ),
                     ],
                     onChanged: (value) {
                       setState(() => filtroDuracao = value);
@@ -162,16 +192,23 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: DropdownButtonFormField<int>(
+                  child: DropdownButtonFormField<int?>(
                     value: filtroLocalidade,
                     decoration: const InputDecoration(
                       labelText: 'Localidade',
                       border: OutlineInputBorder(),
                     ),
-                    items: const [
-                      DropdownMenuItem(value: null, child: Text('Todas')),
-                      DropdownMenuItem(value: 1, child: Text('Localidade 1')),
-                      DropdownMenuItem(value: 2, child: Text('Localidade 2')),
+                    items: [
+                      const DropdownMenuItem<int?>(
+                        value: null,
+                        child: Text('Todas'),
+                      ),
+                      ...localidadesDisponiveis.map(
+                        (localidade) => DropdownMenuItem<int?>(
+                          value: localidade,
+                          child: Text('Localidade $localidade'),
+                        ),
+                      ),
                     ],
                     onChanged: (value) {
                       setState(() => filtroLocalidade = value);
@@ -181,7 +218,8 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
               ],
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
+
             Align(
               alignment: Alignment.centerRight,
               child: TextButton.icon(
@@ -197,7 +235,7 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
               ),
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
 
             ...atividadesOrdenadas.map((atividade) {
               final corresponde = correspondeFiltros(atividade);
@@ -214,7 +252,7 @@ class _HomePageMonitorState extends State<HomePageMonitor> {
                 desativado: !corresponde,
                 onInscrever: () => _inscreverAtividade(atividade),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),
